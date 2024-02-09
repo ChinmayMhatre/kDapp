@@ -17,6 +17,7 @@ import { Copy } from 'lucide-react';
 import { getTokens , formatAddress, convertToEther} from './lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import TokenCard from './components/TokenCard';
+import TokenList from './components/TokenList';
 
 function App() {
   const navigate = useNavigate();
@@ -56,26 +57,6 @@ function App() {
     
     setTokens(tokens)
   }
-
-
-  // const getTokens = async () => {
-  //   if (account.chainId === 1) {
-  //     setAlchemyChain(Network.ETH_MAINNET)
-  //   } else if (account.chainId === 11155111) {
-  //     setAlchemyChain(Network.ETH_SEPOLIA)
-  //   } else if (account.chainId === 5) {
-  //     setAlchemyChain(Network.ETH_GOERLI)
-  //   }
-  //   const alchemy = new Alchemy(config);
-  //   try {
-  //     const balances = await alchemy.core.getTokenBalances(account?.addresses[0]);
-  //     console.log(balances);
-
-  //   } catch (error) {
-  //     console.log(error);
-
-  //   }
-  // }
  
 
   useEffect(() => {
@@ -172,11 +153,7 @@ function App() {
             <TabsTrigger className='w-full' value='transaction' >Transactions</TabsTrigger>
           </TabsList>
           <TabsContent className='w-full px-2' value='token'>
-            {
-              tokens && tokens.map((token: any) => (
-                <TokenCard key={token.address} token={token} />
-              ))
-            }
+            <TokenList/>
           </TabsContent>
           <TabsContent className='w-full px-2' value='transaction'>
             Transaction  

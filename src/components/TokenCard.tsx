@@ -1,11 +1,12 @@
-import React, { FC } from 'react'
+import  { FC } from 'react'
 
 interface TokenCardProps {
     token: any
 }
 
 const TokenCard: FC<TokenCardProps> = ({ token }) => {
-
+    console.log(token);
+    
     return (
         <div className='flex justify-between py-2  items-center'>
             <div className="flex gap-2 justify-start items-center">

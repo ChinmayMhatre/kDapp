@@ -37,11 +37,9 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
           <RouterProvider router={router} />
       </QueryClientProvider>
     </WagmiProvider>
-  </React.StrictMode>
 )
