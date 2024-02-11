@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react'
+import { FC, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import TokenCard from './TokenCard'
 import axios from 'axios'

@@ -16,7 +16,6 @@ import {
 import { Copy } from 'lucide-react';
 import { getTokens , formatAddress, convertToEther} from './lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
-import TokenCard from './components/TokenCard';
 import TokenList from './components/TokenList';
 
 function App() {
@@ -25,43 +24,26 @@ function App() {
   const account = useAccount()
   const { disconnect } = useDisconnect()
   const { chains, switchChain } = useSwitchChain()
-
-  const [tokens, setTokens] = useState<any>([])
   const [buttonText, setButtonText] = useState('')
   const [accountBalance, setAccountBalance] = useState<any>(0)
 
   const balance = useBalance({ address: account?.addresses?.[0], query: { refetchIntervalInBackground: true,
-    refetchInterval: 1000 ,
     enabled: true, 
     notifyOnChangeProps:['data']
   } })
   
-  
-  useEffect(() => {
-    if (account.isConnected) {
-      fetchTokens()
-    }
-  }, [account?.chainId, account?.addresses?.[0]])
 
   useEffect(() => {
-    console.log(account.status);
     if (account.status === 'disconnected') {
       navigate('/login')
     }
     setButtonText(formatAddress(account?.addresses?.[0] ?? ''))
   }, [account.status])
   
-  const fetchTokens = async () => {
-    const tokens = await getTokens(account?.chainId, account?.addresses?.[0])
-    console.log(balance);
-    
-    setTokens(tokens)
-  }
- 
 
   useEffect(() => {
     const ethBalance = BigInt(balance.data?.value ?? 0).toString()
-    setAccountBalance(convertToEther(ethBalance,balance.data?.decimals))
+    setAccountBalance(convertToEther(ethBalance,balance?.data?.decimals))
   }, [balance])
 
 
@@ -107,30 +89,13 @@ function App() {
           ))}
         </div>
 
-        {/* <div className="p-4">
-                {
-                  tokens && tokens.map((token:any) => (
-                    <div key={token.address} className="flex">
-                      <div>
-                        <div>{token.name}</div>
-                        <div>{token.symbol}</div>
-                      </div>
-                      <div>{token.balance}</div>
-                    </div>
-                  ))
-                }
-              </div> */}
-
         <Button onClick={() => navigate('/send')}>
           Send
         </Button>
         {
           account.isConnected && (
             <Select defaultValue={String(account?.chain?.id)} onValueChange={(value: any) => {
-              console.log(value);
-
               switchChain({ chainId: value })
-              console.log('triggered');
             }
             }>
               <SelectTrigger className="w-[180px]">
