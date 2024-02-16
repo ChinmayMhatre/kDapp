@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useAccount, useBalance, useConnect, useDisconnect, useEnsName } from 'wagmi'
+import { useAccount, useBalance, useConnect, useDisconnect, useEnsName, useTransaction } from 'wagmi'
 import { useNavigate } from "react-router-dom";
 import { useSwitchChain } from 'wagmi'
 import MainLayout from './components/MainLayout';
@@ -58,6 +58,11 @@ function App() {
     }
   }
 
+  const transaction = useTransaction({
+    hash:'0x7684e23fca3fd814bb05da68804b4d283734e1e9c66df9e321bcdd7816b76277'
+  })
+
+console.log(transaction?.data);
 
 
   return (

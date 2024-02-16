@@ -38,13 +38,15 @@ export const getTokens = async (response:any): Promise<TokenData[]> => {
           name: '',
           symbol: '',
           logo: '',
-          address: ''
+          address: '',
+          decimals:0
         };
         tempData.name = token.name
         tempData.symbol = token.symbol
         tempData.logo = token.logo
         tempData.address = token.token_address
         tempData.balance = convertToEther(token.balance, token.decimals)
+        tempData.decimals = token.decimals
         tokenData.push(tempData)
       })
     } catch (error) {

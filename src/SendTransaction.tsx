@@ -1,34 +1,11 @@
-import React, { FC, useEffect, useState } from 'react'
+import  { FC, useEffect, useState } from 'react'
 import MainLayout from './components/MainLayout';
-import { set, z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
-import { useBalance, useEstimateGas } from 'wagmi'
+import { useBalance } from 'wagmi'
 import { useAccount } from 'wagmi';
 import { useSendTransaction } from 'wagmi'
-import { parseEther } from 'viem';
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
+import { isAddress, parseEther } from 'viem';
 
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 
 
 
@@ -38,11 +15,6 @@ import { convertToEther, getTokens } from './lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from './components/ui/select';
-const formSchema = z.object({
-    recipient: z.string(),
-    token: z.string(),
-    amount: z.string(),
-})
 
 interface SendTransactionProps {
 
@@ -59,6 +31,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
     })
     const [amount, setAmount] = useState("")
     const [amountError, setAmountError] = useState("")
+    const [error, setError] = useState("")
     const account = useAccount()
     const navigate = useNavigate()
     if (account.isDisconnected) {
@@ -95,61 +68,84 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
     }
 
     const { data: tokens, isLoading, isError, refetch } = useQuery({ queryKey: ['tokens'], queryFn: retrieveTokens, enabled: false });
-
     useEffect(() => {
         refetch()
     }, [account?.chainId, account?.addresses?.[0]])
 
-
-
-
     const { sendTransaction } = useSendTransaction()
 
 
-    if (account.isConnecting) {
+    if (account.isConnecting || isLoading) {
         return <div>Loading...</div>
     }
 
     const displayTokenBalance = () => {
-        if(selectedToken === "ETH"){
+        if (selectedToken === nativeToken.name) {
             return Number(nativeToken.balance).toFixed(4)
         }
-        return Number(tokens?.find((el)=>el.symbol===selectedToken)?.balance).toFixed(4)
+        return Number(tokens?.find((el) => el.symbol === selectedToken)?.balance).toFixed(4)
     }
 
 
     const handleAmount = (e: any) => {
         setAmountError("")
-        const currentToken = tokens?.find((el)=>el.symbol===selectedToken)
+        const currentToken = tokens?.find((el) => el.symbol === selectedToken)
         setAmount(e.target.value)
         console.log(e.target.value, tokens)
 
-        if(selectedToken === "ETH"){
+        if (selectedToken === "ETH") {
             if (e.target.value > Number(nativeToken.balance)) {
                 setAmountError("Amount exceeded")
             }
             return
         }
-        
+
         if (e.target.value > Number(currentToken?.balance)) {
             setAmountError("Amount exceeded")
         }
     }
 
+
+    const handleSendTransaction = async () => {
+        setError("")
+        if (!isAddress(senderAddress)) {
+            setError("Invalid address")
+            return
+        }
+        if (amountError.length > 0) {
+            return
+        }
+        
+        if(selectedToken === nativeToken.name){
+            console.log(selectedToken, nativeToken.name, amount);
+            sendTransaction({
+                to: senderAddress,
+                value: parseEther(amount)
+            },{
+                onSuccess: (data) => {
+                    console.log(data);
+                },
+                onError: (error) => {
+                    console.log(error);
+                }
+            })
+            return
+        }
+        
+        // 0x7684e23fca3fd814bb05da68804b4d283734e1e9c66df9e321bcdd7816b76277
+
+    }
+
     return (
         <MainLayout>
             {/* <TransactionDetails/> */}
-            {/* <Button onClick={() => sendTransaction({
-                to: '0x058Da0C94b7D2EfDec67485c1A14bC80d8fdeac5',
-                value: parseEther('0.000001'),
-            })}>Send</Button> */}
-                <div className=" border border-gray-400 rounded-lg p-2 flex flex-col justify-center items-center gap-1">
-                    <p className='text-lg font-bold'>{account.chain?.name}</p>
-                    <p className=' text-sm'> <span className=' text-gray-500 font-bold text-xs'>Balance: </span> {Number(nativeToken.balance).toFixed(4)} {nativeToken.name} </p>
-                </div>
-            <form >
+            <div className=" h-full flex flex-col gap-4 py-4">
+            <div className=" border border-gray-400 rounded-lg p-2 flex flex-col justify-center items-center gap-1">
+                <p className='text-lg font-bold'>{account.chain?.name}</p>
+                <p className=' text-sm'> <span className=' text-gray-500 font-bold text-xs'>Balance: </span> {Number(nativeToken.balance).toFixed(4)} {nativeToken.name} </p>
+            </div>
                 <Input placeholder="Enter the sender's address" value={senderAddress} onChange={(e) => setSenderAddress(e.target.value)} />
-                <Select value={selectedToken} onValueChange={(value:any) => setSelectedToken(value)}>
+                <Select value={selectedToken} onValueChange={(value: any) => setSelectedToken(value)}>
                     <SelectTrigger>
                         <SelectValue placeholder="Select Token" />
                     </SelectTrigger>
@@ -163,9 +159,13 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                     </SelectContent>
                 </Select>
                 <p>Balance: {displayTokenBalance()}</p>
-                <Input placeholder="Enter the amount" value={amount} type='number' onChange={(e) => handleAmount(e)} />
+                <Input placeholder="Enter the amount" value={amount} className=' border-0 p-0 text-lg text-center' type='number' onChange={(e) => handleAmount(e)} />
                 <p className=' text-red-700 text-sm'>{amountError}</p>
-            </form>
+                <Button className='w-full' onClick={() => handleSendTransaction()}>Send</Button>
+            <div className="">
+                {error}
+            </div>
+            </div>
         </MainLayout>
     )
 }
