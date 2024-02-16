@@ -10,11 +10,12 @@ import { isAddress, parseEther } from 'viem';
 
 
 import { Input } from "@/components/ui/input"
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { convertToEther, getTokens } from './lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from './components/ui/select';
+import { ChevronLeft, ChevronLeftCircle, ChevronLeftCircleIcon } from 'lucide-react';
 
 interface SendTransactionProps {
 
@@ -140,6 +141,12 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
         <MainLayout>
             {/* <TransactionDetails/> */}
             <div className=" h-full flex flex-col gap-4 py-4">
+                <div className=" grid grid-cols-4 justify-between items-center">
+                    <div className="flex">
+                    <Link to="/" className=' p-1 rounded-full hover:bg-slate-100 transition-all duration-200'><ChevronLeft className=" h-6 w-6" /></Link>
+                    </div>
+                    <p className=" text-lg text-center col-span-2 ">Send Transaction</p>
+                </div>
             <div className=" border border-gray-400 rounded-lg p-2 flex flex-col justify-center items-center gap-1">
                 <p className='text-lg font-bold'>{account.chain?.name}</p>
                 <p className=' text-sm'> <span className=' text-gray-500 font-bold text-xs'>Balance: </span> {Number(nativeToken.balance).toFixed(4)} {nativeToken.name} </p>
