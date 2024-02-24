@@ -1,7 +1,7 @@
 import  { FC, useEffect, useState } from 'react'
 import MainLayout from './components/MainLayout';
 import { Button } from "@/components/ui/button"
-import { useBalance } from 'wagmi'
+import { useBalance, useTransaction, useTransactionReceipt, useWaitForTransactionReceipt } from 'wagmi'
 import { useAccount } from 'wagmi';
 import { useSendTransaction } from 'wagmi'
 import { isAddress, parseEther } from 'viem';
@@ -33,6 +33,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
     const [amount, setAmount] = useState("")
     const [amountError, setAmountError] = useState("")
     const [error, setError] = useState("")
+    const [transactionHash, setTransactionHash] = useState('')
     const account = useAccount()
     const navigate = useNavigate()
     if (account.isDisconnected) {
@@ -69,6 +70,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
     }
 
     const { data: tokens, isLoading, isError, refetch } = useQuery({ queryKey: ['tokens'], queryFn: retrieveTokens, enabled: false });
+    
     useEffect(() => {
         refetch()
     }, [account?.chainId, account?.addresses?.[0]])
@@ -92,7 +94,6 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
         setAmountError("")
         const currentToken = tokens?.find((el) => el.symbol === selectedToken)
         setAmount(e.target.value)
-        console.log(e.target.value, tokens)
 
         if (selectedToken === "ETH") {
             if (e.target.value > Number(nativeToken.balance)) {
@@ -118,13 +119,12 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
         }
         
         if(selectedToken === nativeToken.name){
-            console.log(selectedToken, nativeToken.name, amount);
             sendTransaction({
                 to: senderAddress,
                 value: parseEther(amount)
             },{
                 onSuccess: (data) => {
-                    console.log(data);
+                    setTransactionHash(data)  
                 },
                 onError: (error) => {
                     console.log(error);
@@ -133,9 +133,25 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
             return
         }
         
+        
+
         // 0x7684e23fca3fd814bb05da68804b4d283734e1e9c66df9e321bcdd7816b76277
 
     }
+
+
+    const transaction = useTransaction({
+        hash:transactionHash
+    })
+    console.log('transaction',transaction?.data);
+    const TransactionReceipt = useTransactionReceipt({
+        hash:transactionHash
+    })
+    console.log('TransactionReceipt',TransactionReceipt?.data);
+    const waitTransaction = useWaitForTransactionReceipt({
+        hash:transactionHash
+    })
+    console.log('wait Transaction',waitTransaction);
 
     return (
         <MainLayout>

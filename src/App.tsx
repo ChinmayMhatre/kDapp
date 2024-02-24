@@ -17,6 +17,8 @@ import { Copy } from 'lucide-react';
 import { getTokens , formatAddress, convertToEther} from './lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import TokenList from './components/TokenList';
+import TransactionModal from './components/TransactionModal';
+import MyTransactions from './components/MyTransactions';
 
 function App() {
   const navigate = useNavigate();
@@ -58,12 +60,6 @@ function App() {
     }
   }
 
-  const transaction = useTransaction({
-    hash:'0x7684e23fca3fd814bb05da68804b4d283734e1e9c66df9e321bcdd7816b76277'
-  })
-
-console.log(transaction?.data);
-
 
   return (
     <MainLayout>
@@ -83,7 +79,6 @@ console.log(transaction?.data);
         </div>
         <div>
           <br />
-          {/* {account?.chain} */}
           chainId: {account.chainId}
         </div>
         <div>
@@ -116,7 +111,7 @@ console.log(transaction?.data);
             </Select>
           )
         }
-
+        <TransactionModal/>
         <Tabs defaultValue='token' className='w-full' >
           <TabsList className='w-full'>
             <TabsTrigger className='w-full' value='token' >Tokens</TabsTrigger>
@@ -126,7 +121,7 @@ console.log(transaction?.data);
             <TokenList/>
           </TabsContent>
           <TabsContent className='w-full px-2' value='transaction'>
-            Transaction  
+            <MyTransactions address={account.address} chainId={account.chainId} token={balance?.data?.symbol} /> 
           </TabsContent>
         </Tabs>
 
