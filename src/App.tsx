@@ -17,7 +17,6 @@ import { Copy } from 'lucide-react';
 import { getTokens , formatAddress, convertToEther} from './lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import TokenList from './components/TokenList';
-import TransactionModal from './components/TransactionModal';
 import MyTransactions from './components/MyTransactions';
 
 function App() {
@@ -94,10 +93,7 @@ function App() {
         </Button>
         {
           account.isConnected && (
-            <Select defaultValue={String(account?.chain?.id)} onValueChange={(value: any) => {
-              switchChain({ chainId: value })
-            }
-            }>
+            <Select defaultValue={String(account?.chain?.id)} onValueChange={(value: any) => {switchChain({ chainId: value })?.onError((e)=>console.log(e))}}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
               </SelectTrigger>
@@ -111,7 +107,6 @@ function App() {
             </Select>
           )
         }
-        <TransactionModal/>
         <Tabs defaultValue='token' className='w-full' >
           <TabsList className='w-full'>
             <TabsTrigger className='w-full' value='token' >Tokens</TabsTrigger>

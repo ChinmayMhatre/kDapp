@@ -1,20 +1,35 @@
 import React, { FC } from 'react'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { formatEther, formatGwei } from 'viem';
-import { parseEther } from 'viem';
 import { formatAddress } from '@/lib/utils';
 
 interface TransactionCardProps {
     transaction: any
     token: any
+    userAddress: string
 }
 
-const TransactionCard: FC<TransactionCardProps> = ({ transaction, token }) => {
+const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAddress }) => {
+    
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <button className='w-full p-4 rounded-lg border shadow-sm'>
-                    {transaction.block_number}
+                <button className='w-full p-4 rounded-lg flex justify-between items-center border shadow-sm'>
+                    <div>
+
+                        {
+                            transaction.from_address === userAddress.toLowerCase() ?
+                                <p className=' font-bold'>
+                                    Sent
+                                </p> :
+                                <p className='  font-bold'>
+                                    Received
+                                </p>
+                        }
+                    </div>
+                    <p>
+                        {formatEther(transaction.value)} {token}
+                    </p>
                 </button>
             </AlertDialogTrigger>
             <AlertDialogContent>

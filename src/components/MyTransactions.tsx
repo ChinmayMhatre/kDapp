@@ -13,9 +13,6 @@ interface MyTransactionsProps {
 
 const MyTransactions: FC<MyTransactionsProps> = ({ address,chainId,token }) => {
     
-    console.log(chainId);
-    
-    
     const getAllTransactions = async () => {
         const response = await axios.get(`https://deep-index.moralis.io/api/v2.2/${address}`, {
           params: {
@@ -47,7 +44,7 @@ const MyTransactions: FC<MyTransactionsProps> = ({ address,chainId,token }) => {
         <div className='flex flex-col gap-2 overflow-y-scroll h-[40vh] w-full'>
             {
                 data?.data.result.map((transaction:any) => {
-                    return <TransactionCard key={transaction.tx_hash} transaction={transaction} token={token} />
+                    return <TransactionCard key={transaction.tx_hash} transaction={transaction} token={token} userAddress={address} />
                 })
             
             }
