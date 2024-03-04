@@ -1,19 +1,18 @@
 import React, { FC } from 'react'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { formatEther, formatGwei } from 'viem';
 import { formatAddress } from '@/lib/utils';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 
 interface TransactionCardProps {
     transaction: any
     token: any
-    userAddress: string
+    userAddress: any
 }
 
 const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAddress }) => {
-    
     return (
-        <AlertDialog>
-            <AlertDialogTrigger asChild>
+        <Dialog>
+            <DialogTrigger asChild>
                 <button className='w-full p-4 rounded-lg flex justify-between items-center border shadow-sm'>
                     <div>
 
@@ -31,10 +30,10 @@ const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAdd
                         {formatEther(transaction.value)} {token}
                     </p>
                 </button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>
                         <div className="flex justify-evenly items-center">
                             <div className="flex flex-col gap-2 justify-center items-center">
                                 <p>From</p>
@@ -46,8 +45,8 @@ const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAdd
                                 <p>{formatAddress(String(transaction?.to_address))}</p>
                             </div>
                         </div>
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
+                    </DialogTitle>
+                    <DialogDescription>
                         <div className="flex flex-col gap-2 ">
                             {/* <div className="flex justify-between items-center">
                                 <p className=' text-lg'>from :</p>
@@ -74,14 +73,14 @@ const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAdd
                             </div>
 
                         </div>
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
+                    </DialogDescription>
+                </DialogHeader>
                 {/* <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction>Continue</AlertDialogAction>
                 </AlertDialogFooter> */}
-            </AlertDialogContent>
-        </AlertDialog>
+            </DialogContent>
+        </Dialog>
     )
 }
 

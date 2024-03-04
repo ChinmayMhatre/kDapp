@@ -1,9 +1,7 @@
 import { FC } from 'react'
 import TransactionCard from './TransactionCard';
-import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
-
-
+import { getAllTransactions } from '@/lib/api';
 
 interface MyTransactionsProps {
     chainId?: any
@@ -12,22 +10,9 @@ interface MyTransactionsProps {
 }
 
 const MyTransactions: FC<MyTransactionsProps> = ({ address,chainId,token }) => {
-    
-    const getAllTransactions = async () => {
-        const response = await axios.get(`https://deep-index.moralis.io/api/v2.2/${address}`, {
-          params: {
-            'chain': `0x${chainId}`,
-            'order': 'DESC'
-          },
-          headers: {
-            'accept': 'application/json',
-            'X-API-Key': import.meta.env.VITE_MORALIS_API_KEY
-          }
-        });
-        return response
-    }
 
-    const { data, isLoading, isError} = useQuery({ queryKey: ['transactions'], queryFn: getAllTransactions});
+
+    const { data, isLoading, isError} = useQuery({ queryKey: ['transactions',address,chainId], queryFn: getAllTransactions});
 
     if (isLoading) {
         return <div>Loading...</div>
@@ -36,8 +21,6 @@ const MyTransactions: FC<MyTransactionsProps> = ({ address,chainId,token }) => {
     if (isError) {
         return <div>Error</div>
     }
-
-    console.log(data?.data.result[0]);
     
 
     return (

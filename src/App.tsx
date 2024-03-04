@@ -14,10 +14,11 @@ import {
 
 
 import { Copy } from 'lucide-react';
-import { getTokens , formatAddress, convertToEther} from './lib/utils';
+import { getTokens, formatAddress, convertToEther } from './lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import TokenList from './components/TokenList';
 import MyTransactions from './components/MyTransactions';
+import PendingTransaction from './components/PendingTransaction';
 
 function App() {
   const navigate = useNavigate();
@@ -27,12 +28,31 @@ function App() {
   const { chains, switchChain } = useSwitchChain()
   const [buttonText, setButtonText] = useState('')
   const [accountBalance, setAccountBalance] = useState<any>(0)
+  const [pendingTransaction, setPendingTransaction] = useState<pendingTransactionType>({
+    payload: null,
+    hash: ''
+  })
 
-  const balance = useBalance({ address: account?.addresses?.[0], query: { refetchIntervalInBackground: true,
-    enabled: true, 
-    notifyOnChangeProps:['data']
-  } })
-  
+
+
+
+  type pendingTransactionType = {
+    payload: any,
+    hash: string
+  }
+
+  const balance = useBalance({
+    address: account?.addresses?.[0], query: {
+      refetchIntervalInBackground: true,
+      enabled: true,
+      notifyOnChangeProps: ['data']
+    }
+  })
+
+  useEffect(() => {
+    localStorage.getItem('pendingTransaction') && setPendingTransaction(JSON.parse(localStorage.getItem('pendingTransaction') as string))
+  },[])
+
 
   useEffect(() => {
     if (account.status === 'disconnected') {
@@ -40,13 +60,12 @@ function App() {
     }
     setButtonText(formatAddress(account?.addresses?.[0] ?? ''))
   }, [account.status])
-  
+
 
   useEffect(() => {
     const ethBalance = BigInt(balance.data?.value ?? 0).toString()
-    setAccountBalance(convertToEther(ethBalance,balance?.data?.decimals))
+    setAccountBalance(convertToEther(ethBalance, balance?.data?.decimals))
   }, [balance])
-
 
 
   async function copyToClipboard(text: string) {
@@ -93,7 +112,7 @@ function App() {
         </Button>
         {
           account.isConnected && (
-            <Select defaultValue={String(account?.chain?.id)} onValueChange={(value: any) => {switchChain({ chainId: value })?.onError((e)=>console.log(e))}}>
+            <Select defaultValue={String(account?.chain?.id)} onValueChange={(value: any) => { switchChain({ chainId: value })?.onError((e) => console.log(e)) }}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
               </SelectTrigger>
@@ -113,12 +132,18 @@ function App() {
             <TabsTrigger className='w-full' value='transaction' >Transactions</TabsTrigger>
           </TabsList>
           <TabsContent className='w-full px-2' value='token'>
-            <TokenList/>
+            <TokenList />
           </TabsContent>
           <TabsContent className='w-full px-2' value='transaction'>
-            <MyTransactions address={account.address} chainId={account.chainId} token={balance?.data?.symbol} /> 
+            <MyTransactions address={account.address} chainId={account.chainId} token={balance?.data?.symbol} />
           </TabsContent>
         </Tabs>
+
+        {
+          pendingTransaction.hash.length > 0 && (
+            <PendingTransaction hash={pendingTransaction?.hash} payload = {pendingTransaction?.payload} />
+          )
+        }
 
       </div>
 

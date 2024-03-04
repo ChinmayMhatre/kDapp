@@ -10,9 +10,10 @@ import { Input } from "@/components/ui/input"
 import { Link, useNavigate } from 'react-router-dom';
 import { convertToEther, getTokens } from './lib/utils';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from './components/ui/select';
 import { ChevronLeft } from 'lucide-react';
+import { toast } from 'sonner';
+import { retrieveTokens } from './lib/api';
 
 interface SendTransactionProps {
 
@@ -54,21 +55,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
 
 
 
-    const retrieveTokens = async () => {
-        const response = await axios.get(`https://deep-index.moralis.io/api/v2.2/${account?.addresses?.[0]}/erc20`, {
-            params: {
-                'chain': `0x${account?.chainId}`
-            },
-            headers: {
-                'accept': 'application/json',
-                'X-API-Key': import.meta.env.VITE_MORALIS_API_KEY
-            }
-        });
-        const temp = await getTokens(response.data)
-        return temp
-    }
-
-    const { data: tokens, isLoading, isError, refetch } = useQuery({ queryKey: ['tokens'], queryFn: retrieveTokens, enabled: false });
+    const { data: tokens, isLoading, isError, refetch } = useQuery({ queryKey: ['tokens', account], queryFn: retrieveTokens, enabled: false });
 
     useEffect(() => {
         refetch()
@@ -114,15 +101,27 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
         }
 
         if (selectedToken === nativeToken.name) {
+            toast('Sending Transaction' )
             sendTransaction({
                 to: senderAddress,
                 value: parseEther(amount)
             }, {
                 onSuccess: (data) => {
                     setTransactionHash(data)
+                    const newTransaction = {
+                        payload : {
+                            to:senderAddress,
+                            value: parseEther(amount).toString(),
+                        },
+                        hash:data
+                    }
+                    localStorage.setItem('pendingTransaction', JSON.stringify(newTransaction))
+                    navigate('/')
                 },
                 onError: (error) => {
                     console.log(error);
+                    
+                   toast('Error sending transaction')
                 }
             })
             return
@@ -141,10 +140,24 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
 
             writeContract(payload, {
                 onSuccess: (data) => {
-                    console.log(data);
+                    const storePayload = {
+                        chainId: account.chainId,
+                        address: tokenDetails?.address,
+                        functionName: 'transfer',
+                        args: [senderAddress, BigInt(Number(amount) * 10 ** tokenDetails?.decimals).toString()],
+                        abi: [{ "inputs": [{ "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "transfer", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }]
+                    }
+                    const newTransaction = {
+                        storePayload,
+                        hash: data
+                    }
+                    localStorage.setItem('pendingTransaction', JSON.stringify(newTransaction))
+                    navigate('/')
                 },
                 onError: (error) => {
                     console.log(error);
+                    
+                    toast('Error sending transaction')
                 }
             }
             )
@@ -154,19 +167,18 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
 
     }
 
-
-    const transaction = useTransaction({
-        hash: transactionHash
-    })
-    console.log('transaction', transaction?.data);
-    const TransactionReceipt = useTransactionReceipt({
-        hash: transactionHash
-    })
-    console.log('TransactionReceipt', TransactionReceipt?.data);
-    const waitTransaction = useWaitForTransactionReceipt({
-        hash: transactionHash
-    })
-    console.log('wait Transaction', waitTransaction);
+    // const transaction = useTransaction({
+    //     hash: transactionHash
+    // })
+    // console.log('transaction', transaction?.data);
+    // const TransactionReceipt = useTransactionReceipt({
+    //     hash: transactionHash
+    // })
+    // console.log('TransactionReceipt', TransactionReceipt?.data);
+    // const waitTransaction = useWaitForTransactionReceipt({
+    //     hash: transactionHash
+    // })
+    // console.log('wait Transaction', waitTransaction);
 
 
     if (account.isConnecting || isLoading) {
