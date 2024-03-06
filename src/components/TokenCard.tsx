@@ -5,6 +5,7 @@ interface TokenCardProps {
 }
 
 const TokenCard: FC<TokenCardProps> = ({ token }) => {
+    console.log(token, 'token');
     
     return (
         <div className='flex justify-between py-2  items-center'>

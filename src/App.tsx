@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSwitchChain } from 'wagmi'
 import MainLayout from './components/MainLayout';
 import { Button } from './components/ui/button';
+import Otter from './assets/otter.svg';
 import {
   Select,
   SelectContent,
@@ -50,7 +51,7 @@ function App() {
   })
 
   useEffect(() => {
-    localStorage.getItem('pendingTransaction') && setPendingTransaction(JSON.parse(localStorage.getItem('pendingTransaction') as string))
+    localStorage.getItem(`${account?.address}`) && setPendingTransaction(JSON.parse(localStorage.getItem(`${account?.address}`) as string))
   },[])
 
 
@@ -78,12 +79,16 @@ function App() {
     }
   }
 
+  console.log(pendingTransaction,'pending');
+  
 
   return (
     <MainLayout>
       <div className='h-full w-full flex flex-col gap-4'>
-        <h2>Account</h2>
-        {accountBalance}
+        <img src={Otter} alt="logo" className='h-14 w-14' />
+        <h2 className=' font-bold text-4xl text-slate-700'>
+        {Number(accountBalance).toPrecision(4)} <span className=' text-xl text-slate-500'>{balance?.data?.symbol}</span>
+        </h2>
         <div className=" gap-3 flex">
           <Button onClick={() => copyToClipboard(account?.addresses?.[0] ?? '')}>
             {buttonText}
@@ -140,7 +145,7 @@ function App() {
         </Tabs>
 
         {
-          pendingTransaction.hash.length > 0 && (
+           pendingTransaction?.hash.length > 0 && (
             <PendingTransaction userAddress={account.address as string} chainId={account?.chainId} nativeToken={balance?.data?.symbol ?? ''} hash={pendingTransaction?.hash} payload = {pendingTransaction?.payload} />
           )
         }

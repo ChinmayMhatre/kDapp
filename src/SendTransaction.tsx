@@ -105,18 +105,19 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
             sendTransaction({
                 to: senderAddress,
                 value: parseEther(amount),
-                //  gas: parseGwei('1', 'wei')
+                gas: BigInt(21000),
             }, {
                 onSuccess: (data) => {
                     setTransactionHash(data)
                     const newTransaction = {
                         payload : {
                             to:senderAddress,
-                            value: parseEther(amount).toString(),
+                            value: amount,
+                            gas:BigInt(21000).toString()
                         },
                         hash:data
                     }
-                    localStorage.setItem('pendingTransaction', JSON.stringify(newTransaction))
+                    localStorage.setItem(`${account?.address}`, JSON.stringify(newTransaction))
                     navigate('/')
                 },
                 onError: (error) => {
@@ -136,13 +137,15 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                 address: tokenDetails?.address,
                 functionName: 'transfer',
                 args: [senderAddress, BigInt(Number(amount) * 10 ** tokenDetails?.decimals)],
-                abi: [{ "inputs": [{ "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "transfer", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }]
+                abi: [{ "inputs": [{ "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "transfer", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }],
+                gas: BigInt(43500).toString(),
             }
 
             writeContract(payload, {
                 onSuccess: (data) => {
                     const storePayload = {
                         chainId: account.chainId,
+                        gas: BigInt(43500).toString(),
                         address: tokenDetails?.address,
                         functionName: 'transfer',
                         args: [senderAddress, BigInt(Number(amount) * 10 ** tokenDetails?.decimals).toString()],
@@ -152,7 +155,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                         storePayload,
                         hash: data
                     }
-                    localStorage.setItem('pendingTransaction', JSON.stringify(newTransaction))
+                    localStorage.setItem(`${account?.address}`, JSON.stringify(newTransaction))
                     navigate('/')
                 },
                 onError: (error) => {

@@ -5,7 +5,8 @@ import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-
+import Icons from './assets/loginIcons.svg';
+import Otter from './assets/otter.svg';
 interface LoginProps {
 
 }
@@ -42,25 +43,29 @@ const Login: FC<LoginProps> = ({ }) => {
 
   return (
     <MainLayout>
+      <img src={Icons} alt="login" className='w-full h-full bg-pattern absolute mx-auto' />
       <div className='flex justify-center items-center h-full flex-col gap-4'>
-        <h2>Connect</h2>
+        <div className="flex flex-col z-10  justify-center items-center gap-2">
+          <img src={Otter} alt="" />
+        </div>
+        <h2 className=' font-bold text-4xl z-10 text-[#2172ED]'>Otter Wallet</h2>
         <Button
           key={metamask?.uid}
           onClick={handleConnect}
           disabled={status === 'pending'}
-          className=' w-[70%] '
+          className=' w-[70%] z-10 '
           type="button"
           variant={"outline"}
         >
           {
             status === "pending" ? (
               <>
-                <Loader2 className='mr-2 h-4 w-4 animate-spin'/>
+                <Loader2 className='mr-2 h-4 w-4 z-10 animate-spin'/>
                 Connecting
               </>
             ) : (
               <>
-                <img src={metamask.icon} className='mr-2' alt="metamask" width={20} height={20} />
+                <img src={metamask.icon} className='mr-2 z-10' alt="metamask" width={20} height={20} />
                 Connect with {metamask?.name}
               </>
             )

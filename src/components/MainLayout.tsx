@@ -7,7 +7,7 @@ interface MainLayoutProps {
 
 const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   return (
-    <div className='mx-auto max-w-sm px-2 h-screen pt-2'>
+    <div className='mx-auto relative max-w-sm px-2 h-screen pt-4'>
      {children}
      <Toaster position='bottom-center'  richColors={true} />
     </div>

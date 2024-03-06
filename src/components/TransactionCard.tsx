@@ -1,7 +1,8 @@
-import React, { FC } from 'react'
-import { formatEther, formatGwei } from 'viem';
+import React, { FC, useEffect, useState } from 'react'
+import { decodeFunctionData, erc20Abi, formatEther, formatGwei } from 'viem';
 import { formatAddress } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { useReadContracts } from 'wagmi';
 
 interface TransactionCardProps {
     transaction: any
@@ -10,6 +11,70 @@ interface TransactionCardProps {
 }
 
 const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAddress }) => {
+    const [toAddress, setToAddress] = useState("")
+    const [valueData, setValueData] = useState({
+        value: "",
+        symbol: "",
+    })
+
+    const coinNameContract = {
+        address: transaction?.to,
+        abi: erc20Abi,
+        functionName: 'name' as 'name',
+    }
+
+    const coinDecimalContract = {
+        address: transaction?.to,
+        abi: erc20Abi,
+        functionName: 'decimals' as "decimals",
+    } as const
+
+    const coinDataFetch = useReadContracts({
+        contracts: [
+            { ...coinNameContract },
+            { ...coinDecimalContract }
+        ],
+        query: {
+            enabled: false
+        }
+    })
+
+
+    const fetchTokenData = () => {
+        console.log(transaction?.input,transaction, 'input');
+        
+        if (transaction?.input === '0x') {
+            setToAddress(transaction?.to)
+            setValueData({
+                value: formatEther(transaction?.value),
+                symbol: token
+            })
+        }
+        else {
+            coinDataFetch.refetch()
+            const { args } = decodeFunctionData({
+                abi: erc20Abi,
+                data: transaction?.input,
+            })
+            setToAddress(args[0] as string)
+            console.log(args, coinDataFetch);
+
+            const coinName = coinDataFetch?.data?.[0]?.result
+            const coinValue = Number(args[1]?.toString()) / 10 ** Number(coinDataFetch?.data?.[1]?.result)
+
+            console.log(coinValue, 'coinValue');
+            setValueData({
+                value: coinValue.toString(),
+                symbol: coinName as string
+            })
+
+        }
+    }
+
+    useEffect(() => {
+            fetchTokenData()
+    }, [transaction])
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -27,7 +92,7 @@ const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAdd
                         }
                     </div>
                     <p>
-                        {formatEther(transaction.value)} {token}
+                        {valueData.value} {valueData.symbol}
                     </p>
                 </button>
             </DialogTrigger>
@@ -42,7 +107,7 @@ const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAdd
                             <div className="">{'->'}</div>
                             <div className=" flex flex-col justify-center items-center gap-2">
                                 <p>To</p>
-                                <p>{formatAddress(String(transaction?.to_address))}</p>
+                                <p>{formatAddress(String(toAddress))}</p>
                             </div>
                         </div>
                     </DialogTitle>
@@ -61,7 +126,7 @@ const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAdd
                             </div>
                             <div className="flex justify-between items-center">
                                 <p>Amount</p>
-                                <p>{formatEther(transaction.value)} {token}</p>
+                                <p>{valueData.value} {valueData.symbol}</p>
                             </div>
                             <div className="flex justify-between items-center">
                                 <p>Gas Limit (Units)</p>

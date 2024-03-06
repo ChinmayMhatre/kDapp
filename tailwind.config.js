@@ -17,6 +17,9 @@ module.exports = {
       },
     },
     extend: {
+      backgroundImage: {
+        'pattern': "url('/src/assets/pattern.svg')",
+      },
       colors:{
         "primary-purple": '#4D00B4',
         "secondary-purple": '#9013FE'
