@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { useBalance, useTransaction, useTransactionReceipt, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { useAccount } from 'wagmi';
 import { useSendTransaction } from 'wagmi'
-import { isAddress, parseEther } from 'viem';
+import { isAddress, parseEther, parseGwei } from 'viem';
 
 import { Input } from "@/components/ui/input"
 import { Link, useNavigate } from 'react-router-dom';
@@ -104,7 +104,8 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
             toast('Sending Transaction' )
             sendTransaction({
                 to: senderAddress,
-                value: parseEther(amount)
+                value: parseEther(amount),
+                //  gas: parseGwei('1', 'wei')
             }, {
                 onSuccess: (data) => {
                     setTransactionHash(data)

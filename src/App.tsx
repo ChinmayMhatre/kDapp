@@ -141,7 +141,7 @@ function App() {
 
         {
           pendingTransaction.hash.length > 0 && (
-            <PendingTransaction hash={pendingTransaction?.hash} payload = {pendingTransaction?.payload} />
+            <PendingTransaction userAddress={account.address as string} chainId={account?.chainId} nativeToken={balance?.data?.symbol ?? ''} hash={pendingTransaction?.hash} payload = {pendingTransaction?.payload} />
           )
         }
 
