@@ -5,14 +5,6 @@ import { useSwitchChain } from 'wagmi'
 import MainLayout from './components/MainLayout';
 import { Button } from './components/ui/button';
 import Otter from './assets/otter.svg';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
 
 import { Copy } from 'lucide-react';
 import { getTokens, formatAddress, convertToEther } from './lib/utils';
@@ -52,8 +44,10 @@ function App() {
 
   useEffect(() => {
     localStorage.getItem(`${account?.address}`) && setPendingTransaction(JSON.parse(localStorage.getItem(`${account?.address}`) as string))
-  },[])
+  }, [])
 
+  console.log(account?.chainId, 'chainId');
+  
 
   useEffect(() => {
     if (account.status === 'disconnected') {
@@ -79,15 +73,19 @@ function App() {
     }
   }
 
-  console.log(pendingTransaction,'pending');
-  
+  console.log(pendingTransaction, 'pending');
+
+  if (account?.isConnecting) {
+    return <div>Connecting...</div>
+  }
+
 
   return (
     <MainLayout>
       <div className='h-full w-full flex flex-col gap-4'>
         <img src={Otter} alt="logo" className='h-14 w-14' />
         <h2 className=' font-bold text-4xl text-slate-700'>
-        {Number(accountBalance).toPrecision(4)} <span className=' text-xl text-slate-500'>{balance?.data?.symbol}</span>
+          {Number(accountBalance).toPrecision(4)} <span className=' text-xl text-slate-500'>{balance?.data?.symbol}</span>
         </h2>
         <div className=" gap-3 flex">
           <Button onClick={() => copyToClipboard(account?.addresses?.[0] ?? '')}>
@@ -100,37 +98,20 @@ function App() {
             </Button>
           )}
         </div>
-        <div>
-          <br />
-          chainId: {account.chainId}
-        </div>
-        <div>
-          {chains && chains.map((chain) => (
-            <button key={chain.id} onClick={() => switchChain({ chainId: chain.id })}>
-              {chain.nativeCurrency.symbol}
-            </button>
-          ))}
+        <div className=''>
+          <h2 className=' text-lg pl-2 pb-2 font-semibold' >Chain</h2>
+          <div className=" bg-slate-100 inline-flex items-center gap-2 p-2 rounded-full">
+            {chains && chains.map((chain) => (
+              <button key={chain.id} onClick={() => switchChain({ chainId: chain.id })} className={`${chain.id === account.chainId ? ' bg-white  shadow-md ' : 'text-slate-600'} font-semibold   rounded-full  px-4 py-2 text-sm`}>
+                {chain.nativeCurrency.name}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <Button onClick={() => navigate('/send')}>
-          Send
+        <Button onClick={() => navigate('/send')} className=' font-semibold'>
+          Send Tokens
         </Button>
-        {
-          account.isConnected && (
-            <Select defaultValue={String(account?.chain?.id)} onValueChange={(value: any) => { switchChain({ chainId: value })?.onError((e) => console.log(e)) }}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {
-                  chains && chains.map((chain) => (
-                    <SelectItem value={String(chain.id)}>{chain?.name}</SelectItem>
-                  ))
-                }
-              </SelectContent>
-            </Select>
-          )
-        }
         <Tabs defaultValue='token' className='w-full' >
           <TabsList className='w-full'>
             <TabsTrigger className='w-full' value='token' >Tokens</TabsTrigger>
@@ -145,8 +126,8 @@ function App() {
         </Tabs>
 
         {
-           pendingTransaction?.hash.length > 0 && (
-            <PendingTransaction userAddress={account.address as string} chainId={account?.chainId} nativeToken={balance?.data?.symbol ?? ''} hash={pendingTransaction?.hash} payload = {pendingTransaction?.payload} />
+          pendingTransaction?.hash.length > 0 && (
+            <PendingTransaction userAddress={account.address as string} chainId={account?.chainId} nativeToken={balance?.data?.symbol ?? ''} hash={pendingTransaction?.hash} payload={pendingTransaction?.payload} />
           )
         }
 

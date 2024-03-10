@@ -1,4 +1,6 @@
-import  { FC } from 'react'
+import { FC } from 'react'
+import Otter from '../assets/Otter.svg'
+import OtterBnW from '../assets/OtterBnW.svg'
 
 interface TokenCardProps {
     token: any
@@ -6,19 +8,15 @@ interface TokenCardProps {
 
 const TokenCard: FC<TokenCardProps> = ({ token }) => {
     console.log(token, 'token');
-    
+
     return (
         <div className='flex justify-between py-2  items-center'>
             <div className="flex gap-2 justify-start items-center">
-                {
-                    token.logo ? (
-                        <img src={token.logo} className='w-12 h-12' alt="" />
-                    ) : (
-                        <div className=" w-12 h-12 bg-slate-400 rounded-full"></div>
-                    )
-                }
+                <div className=" bg-slate-100 p-2 rounded-full">
+                    <img src={OtterBnW} className='w-10 h-10 ' alt="otter" />
+                </div>
                 <div className="flex flex-col items-start justify-center">
-                    <p className=' font-bold text-lg text-[#4E5C6B]'>{token.balance}</p>
+                    <p className=' font-bold text-lg text-[#4E5C6B]'>{Number(token.balance).toFixed(4)}</p>
                     <p className=' text-secondary-purple text-xs font-bold' >{token.symbol}</p>
                 </div>
             </div>

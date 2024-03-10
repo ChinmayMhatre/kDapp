@@ -37,6 +37,10 @@ const TokenList: FC<TokenListProps> = ({ }) => {
         return <CardSkeleton/>
     }
 
+    if(!isLoading && tokens?.length === 0){
+        return <div className='h-full flex justify-center items-center'>No tokens found</div>
+    }
+
 
     if (isError) {
         return <div className='h-full flex justify-center items-center'>Something went wrong</div>

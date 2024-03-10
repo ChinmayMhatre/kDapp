@@ -12,19 +12,20 @@ interface TransactionCardProps {
 
 const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAddress }) => {
     const [toAddress, setToAddress] = useState("")
+    const [transactionDataLoading, setTransactionDataLoading] = useState(false)
     const [valueData, setValueData] = useState({
         value: "",
         symbol: "",
     })
 
     const coinNameContract = {
-        address: transaction?.to,
+        address: transaction?.to_address,
         abi: erc20Abi,
         functionName: 'name' as 'name',
     }
 
     const coinDecimalContract = {
-        address: transaction?.to,
+        address: transaction?.to_address,
         abi: erc20Abi,
         functionName: 'decimals' as "decimals",
     } as const
@@ -33,16 +34,11 @@ const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAdd
         contracts: [
             { ...coinNameContract },
             { ...coinDecimalContract }
-        ],
-        query: {
-            enabled: false
-        }
+        ]
     })
 
 
     const fetchTokenData = () => {
-        console.log(transaction?.input,transaction, 'input');
-        
         if (transaction?.input === '0x') {
             setToAddress(transaction?.to)
             setValueData({
@@ -51,29 +47,35 @@ const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAdd
             })
         }
         else {
-            coinDataFetch.refetch()
+            setTransactionDataLoading(true)
             const { args } = decodeFunctionData({
                 abi: erc20Abi,
                 data: transaction?.input,
             })
             setToAddress(args[0] as string)
-            console.log(args, coinDataFetch);
-
+            console.log(coinDataFetch?.data, 'args');
+            
             const coinName = coinDataFetch?.data?.[0]?.result
             const coinValue = Number(args[1]?.toString()) / 10 ** Number(coinDataFetch?.data?.[1]?.result)
 
-            console.log(coinValue, 'coinValue');
             setValueData({
-                value: coinValue.toString(),
+                value: coinValue,
                 symbol: coinName as string
             })
-
+            
+            setTransactionDataLoading(false)
         }
     }
 
     useEffect(() => {
-            fetchTokenData()
-    }, [transaction])
+        fetchTokenData()
+    }, [transaction,coinDataFetch.data])
+    
+
+    if (transactionDataLoading) {
+        return <div>Loading...</div>
+    }
+
 
     return (
         <Dialog>
@@ -126,7 +128,7 @@ const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAdd
                             </div>
                             <div className="flex justify-between items-center">
                                 <p>Amount</p>
-                                <p>{valueData.value} {valueData.symbol}</p>
+                                <p>{valueData.value && valueData?.value} {valueData?.symbol}</p>
                             </div>
                             <div className="flex justify-between items-center">
                                 <p>Gas Limit (Units)</p>
