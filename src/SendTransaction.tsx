@@ -14,6 +14,7 @@ import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from '.
 import { ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { retrieveTokens } from './lib/api';
+import PendingTransaction from './components/PendingTransaction';
 
 interface SendTransactionProps {
 
@@ -118,7 +119,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                         hash:data
                     }
                     localStorage.setItem(`${account?.address}`, JSON.stringify(newTransaction))
-                    navigate('/')
+                    location.reload()
                 },
                 onError: (error) => {
                     console.log(error);
@@ -152,11 +153,11 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                         abi: [{ "inputs": [{ "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "transfer", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }]
                     }
                     const newTransaction = {
-                        storePayload,
+                        payload:storePayload,
                         hash: data
                     }
                     localStorage.setItem(`${account?.address}`, JSON.stringify(newTransaction))
-                    navigate('/')
+                    location.reload()
                 },
                 onError: (error) => {
                     console.log(error);
@@ -225,6 +226,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                     {error}
                 </div>
             </div>
+            <PendingTransaction userAddress={account.address as string} chainId={account?.chainId} nativeToken={nativeToken.name} />
         </MainLayout>
     )
 }

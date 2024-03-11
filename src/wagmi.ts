@@ -11,7 +11,7 @@ export const config = createConfig({
   transports: {
     [mainnet.id]: http(),
     [sepolia.id]: http(),
-    [goerli.id]: http(),
+    [goerli.id]: http('https://eth-goerli.g.alchemy.com/v2/9uYuE_B8KltENwqjoeUwH_Ic-PDGASjI'),
   },
    
 })

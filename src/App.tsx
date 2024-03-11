@@ -21,11 +21,11 @@ function App() {
   const { chains, switchChain } = useSwitchChain()
   const [buttonText, setButtonText] = useState('')
   const [accountBalance, setAccountBalance] = useState<any>(0)
-  const [pendingTransaction, setPendingTransaction] = useState<pendingTransactionType>({
-    payload: null,
-    hash: ''
-  })
 
+useEffect(() => {
+  console.log('mounted');
+  
+}, [])
 
 
 
@@ -42,11 +42,6 @@ function App() {
     }
   })
 
-  useEffect(() => {
-    localStorage.getItem(`${account?.address}`) && setPendingTransaction(JSON.parse(localStorage.getItem(`${account?.address}`) as string))
-  }, [])
-
-  console.log(account?.chainId, 'chainId');
   
 
   useEffect(() => {
@@ -73,7 +68,6 @@ function App() {
     }
   }
 
-  console.log(pendingTransaction, 'pending');
 
   if (account?.isConnecting) {
     return <div>Connecting...</div>
@@ -124,13 +118,7 @@ function App() {
             <MyTransactions address={account.address} chainId={account.chainId} token={balance?.data?.symbol} />
           </TabsContent>
         </Tabs>
-
-        {
-          pendingTransaction?.hash.length > 0 && (
-            <PendingTransaction userAddress={account.address as string} chainId={account?.chainId} nativeToken={balance?.data?.symbol ?? ''} hash={pendingTransaction?.hash} payload={pendingTransaction?.payload} />
-          )
-        }
-
+            <PendingTransaction userAddress={account.address as string} chainId={account?.chainId} nativeToken={balance?.data?.symbol ?? ''} />
       </div>
 
 
