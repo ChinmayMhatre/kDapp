@@ -21,22 +21,9 @@ module.exports = {
         'pattern': "url('/src/assets/pattern.svg')",
       },
       colors:{
+        "primary": '#2172ED',
         "primary-purple": '#4D00B4',
         "secondary-purple": '#9013FE'
-      },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },

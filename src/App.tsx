@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useAccount, useBalance, useConnect, useDisconnect, useEnsName, useTransaction } from 'wagmi'
+import { useAccount, useBalance, useDisconnect } from 'wagmi'
 import { useNavigate } from "react-router-dom";
 import { useSwitchChain } from 'wagmi'
 import MainLayout from './components/MainLayout';
@@ -7,7 +7,7 @@ import { Button } from './components/ui/button';
 import Otter from './assets/otter.svg';
 
 import { Copy } from 'lucide-react';
-import { getTokens, formatAddress, convertToEther } from './lib/utils';
+import { formatAddress, convertToEther } from './lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import TokenList from './components/TokenList';
 import MyTransactions from './components/MyTransactions';
@@ -22,17 +22,6 @@ function App() {
   const [buttonText, setButtonText] = useState('')
   const [accountBalance, setAccountBalance] = useState<any>(0)
 
-useEffect(() => {
-  console.log('mounted');
-  
-}, [])
-
-
-
-  type pendingTransactionType = {
-    payload: any,
-    hash: string
-  }
 
   const balance = useBalance({
     address: account?.addresses?.[0], query: {
@@ -42,7 +31,7 @@ useEffect(() => {
     }
   })
 
-  
+
 
   useEffect(() => {
     if (account.status === 'disconnected') {
@@ -54,7 +43,7 @@ useEffect(() => {
 
   useEffect(() => {
     const ethBalance = BigInt(balance.data?.value ?? 0).toString()
-    setAccountBalance(convertToEther(ethBalance, balance?.data?.decimals))
+    setAccountBalance(convertToEther(ethBalance, balance?.data?.decimals ?? 0))
   }, [balance])
 
 
@@ -78,9 +67,6 @@ useEffect(() => {
     <MainLayout>
       <div className='h-full w-full flex flex-col gap-4'>
         <img src={Otter} alt="logo" className='h-14 w-14' />
-        <h2 className=' font-bold text-4xl text-slate-700'>
-          {Number(accountBalance).toPrecision(4)} <span className=' text-xl text-slate-500'>{balance?.data?.symbol}</span>
-        </h2>
         <div className=" gap-3 flex">
           <Button onClick={() => copyToClipboard(account?.addresses?.[0] ?? '')}>
             {buttonText}
@@ -92,6 +78,9 @@ useEffect(() => {
             </Button>
           )}
         </div>
+        <h2 className=' font-bold text-4xl text-slate-700'>
+          {Number(accountBalance).toPrecision(4)} <span className=' text-xl text-slate-500'>{balance?.data?.symbol}</span>
+        </h2>
         <div className=''>
           <h2 className=' text-lg pl-2 pb-2 font-semibold' >Chain</h2>
           <div className=" bg-slate-100 inline-flex items-center gap-2 p-2 rounded-full">
@@ -118,10 +107,8 @@ useEffect(() => {
             <MyTransactions address={account.address} chainId={account.chainId} token={balance?.data?.symbol} />
           </TabsContent>
         </Tabs>
-            <PendingTransaction userAddress={account.address as string} chainId={account?.chainId} nativeToken={balance?.data?.symbol ?? ''} />
+        <PendingTransaction userAddress={account.address as string} chainId={account?.chainId} nativeToken={balance?.data?.symbol ?? ''} />
       </div>
-
-
     </MainLayout>
   )
 }

@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import { useAccount, useConnect } from 'wagmi';
 import MainLayout from './components/MainLayout';
 import { Button } from './components/ui/button';
@@ -26,8 +26,6 @@ const Login: FC<LoginProps> = ({ }) => {
 
   const metamask: any = connectors.find((connector) => connector.id === 'io.metamask')
 
-
-
   const handleConnect = async () => {
     connect({ connector: metamask },{
       onSuccess: () => {
@@ -48,7 +46,7 @@ const Login: FC<LoginProps> = ({ }) => {
         <div className="flex flex-col z-10  justify-center items-center gap-2">
           <img src={Otter} alt="" />
         </div>
-        <h2 className=' font-bold text-4xl z-10 text-[#2172ED]'>Otter Wallet</h2>
+        <h2 className=' font-bold text-4xl z-10 text-primary'>Otter Wallet</h2>
         <Button
           key={metamask?.uid}
           onClick={handleConnect}

@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react'
 import MainLayout from './components/MainLayout';
 import { Button } from "@/components/ui/button"
-import { useBalance, useTransaction, useTransactionReceipt, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import { useBalance, useWriteContract } from 'wagmi'
 import { useAccount } from 'wagmi';
 import { useSendTransaction } from 'wagmi'
 import { isAddress, parseEther, parseGwei } from 'viem';
@@ -15,6 +15,8 @@ import { ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { retrieveTokens } from './lib/api';
 import PendingTransaction from './components/PendingTransaction';
+import Otter from './assets/otter.svg';
+
 
 interface SendTransactionProps {
 
@@ -31,7 +33,6 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
     const [amount, setAmount] = useState("")
     const [amountError, setAmountError] = useState("")
     const [error, setError] = useState("")
-    const [transactionHash, setTransactionHash] = useState('')
     const account = useAccount()
     const navigate = useNavigate()
 
@@ -109,7 +110,6 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                 gas: BigInt(21000),
             }, {
                 onSuccess: (data) => {
-                    setTransactionHash(data)
                     const newTransaction = {
                         payload : {
                             to:senderAddress,
@@ -168,26 +168,17 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
             )
         }
 
-        // 0x7684e23fca3fd814bb05da68804b4d283734e1e9c66df9e321bcdd7816b76277
-
     }
 
-    // const transaction = useTransaction({
-    //     hash: transactionHash
-    // })
-    // console.log('transaction', transaction?.data);
-    // const TransactionReceipt = useTransactionReceipt({
-    //     hash: transactionHash
-    // })
-    // console.log('TransactionReceipt', TransactionReceipt?.data);
-    // const waitTransaction = useWaitForTransactionReceipt({
-    //     hash: transactionHash
-    // })
-    // console.log('wait Transaction', waitTransaction);
 
 
     if (account.isConnecting || isLoading) {
-        return <div>Loading...</div>
+        return <MainLayout>
+            <div className="flex flex-col h-full text-center justify-center items-center">
+                <img src={Otter} className=' w-14 h-14 ' alt="" />
+                <p className=' text-xl font-bold'>Loading</p>
+            </div>
+        </MainLayout>
     }
 
 
@@ -219,7 +210,10 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                     </SelectContent>
                 </Select>
                 <p>Balance: {displayTokenBalance()}</p>
-                <Input placeholder="Enter the amount" value={amount} className=' border-0 p-0 text-lg text-center' type='number' onChange={(e) => handleAmount(e)} />
+                <div className="flex font-semibold text-[#4E5C6B] justify-center items-center">
+                    Amount
+                </div>
+                <Input placeholder={`0.0 ${selectedToken}`} value={amount} className=' outline-none border-0 p-0 text-4xl  text-center' type='number' onChange={(e) => handleAmount(e)} />
                 <p className=' text-red-700 text-sm'>{amountError}</p>
                 <Button className='w-full' onClick={() => handleSendTransaction()}>Send</Button>
                 <div className="">

@@ -5,6 +5,8 @@ import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
 import CardSkeleton from './CardSkeleton'
 import { getTokens } from '@/lib/utils'
+import SadOtter from '../assets/SadOtter.svg'
+
 
 
 interface TokenListProps {
@@ -12,7 +14,7 @@ interface TokenListProps {
 
 const TokenList: FC<TokenListProps> = ({ }) => {
     const account = useAccount()
-    
+
     const retrieveTokens = async () => {
         const response = await axios.get(`https://deep-index.moralis.io/api/v2.2/${account?.addresses?.[0]}/erc20`, {
             params: {
@@ -26,19 +28,22 @@ const TokenList: FC<TokenListProps> = ({ }) => {
         const temp = await getTokens(response.data)
         return temp
     }
-    
-    const { data:tokens, isLoading, isError, refetch } = useQuery({ queryKey: ['tokens'], queryFn: retrieveTokens,enabled: false});
-    
+
+    const { data: tokens, isLoading, isError, refetch } = useQuery({ queryKey: ['tokens'], queryFn: retrieveTokens, enabled: false });
+
     useEffect(() => {
-      refetch()
+        refetch()
     }, [account?.chainId, account?.addresses?.[0]])
-    
+
     if (isLoading) {
-        return <CardSkeleton/>
+        return <CardSkeleton />
     }
 
-    if(!isLoading && tokens?.length === 0){
-        return <div className='h-full flex justify-center items-center'>No tokens found</div>
+    if (!isLoading && tokens?.length === 0) {
+        return <div className='flex pt-4 items-center flex-col text-center justify-center'>
+            <img src={SadOtter} alt="" />
+            <p className=' font-bold text-[#7596BD]'>No Tokens found</p>
+        </div>
     }
 
 

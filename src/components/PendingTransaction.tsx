@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useState } from 'react'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
+import { AlertDialog, AlertDialogAction,  AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
 import { formatAddress } from '@/lib/utils';
-import { serialize, useReadContract, useReadContracts, useSendTransaction, useTransaction, useWatchPendingTransactions, useWriteContract } from 'wagmi';
-import { decodeFunctionData, erc20Abi, formatEther, formatGwei, parseEther } from 'viem';
+import {  useReadContracts, useSendTransaction, useTransaction,useWriteContract } from 'wagmi';
+import { decodeFunctionData, erc20Abi, formatEther, formatGwei,} from 'viem';
 import { Loader2 } from 'lucide-react';
 
 interface PendingTransactionProps {
@@ -38,7 +38,6 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
         value: "",
         symbol: "",
     })
-    const [isOpen, setIsOpen] = useState(true)
     const [toAddress, setToAddress] = useState("")
     const { sendTransaction } = useSendTransaction()
 
@@ -49,9 +48,6 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
             enabled: true,
         }
     })
-
-    console.log(transaction?.data?.blockHash, 'blockHash');
-    
 
     const coinNameContract = {
         address: transaction?.data?.to,
@@ -77,10 +73,6 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
 
 
     const fetchTokenData = () => {
-        // console.log(transaction);
-        // console.log(transaction?.data?.blockHash, 'blockHash');
-        // console.log(pendingTransaction);
-        
 
         if (transaction?.data?.chainId != chainId) {
             setPendingTransaction({
@@ -138,7 +130,8 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
             ...pendingTransaction?.payload,
             gas: BigInt(Number(pendingTransaction?.payload.gas) * 2).toString()
         }
-
+        console.log(!pendingTransaction?.payload?.args);
+        
         if (!!pendingTransaction?.payload?.args) {
             writeContract(newPayload)
         } else {
