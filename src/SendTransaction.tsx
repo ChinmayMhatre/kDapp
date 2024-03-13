@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button"
 import { useBalance, useWriteContract } from 'wagmi'
 import { useAccount } from 'wagmi';
 import { useSendTransaction } from 'wagmi'
-import { isAddress, parseEther, parseGwei } from 'viem';
+import { isAddress, parseEther} from 'viem';
 
 import { Input } from "@/components/ui/input"
 import { Link, useNavigate } from 'react-router-dom';
-import { convertToEther, getTokens } from './lib/utils';
+import { convertToEther} from './lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from './components/ui/select';
 import { ChevronLeft } from 'lucide-react';
@@ -57,7 +57,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
 
 
 
-    const { data: tokens, isLoading, isError, refetch } = useQuery({ queryKey: ['tokens', account], queryFn: retrieveTokens, enabled: false });
+    const { data: tokens, isLoading, refetch } = useQuery({ queryKey: ['tokens', account], queryFn: retrieveTokens, enabled: false });
 
     useEffect(() => {
         refetch()
@@ -137,7 +137,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                 chainId: account.chainId,
                 address: tokenDetails?.address,
                 functionName: 'transfer',
-                args: [senderAddress, BigInt(Number(amount) * 10 ** tokenDetails?.decimals)],
+                args: [senderAddress, BigInt(Number(amount) * 10 ** (tokenDetails?.decimals ))],
                 abi: [{ "inputs": [{ "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "transfer", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }],
                 gas: BigInt(43500).toString(),
             }

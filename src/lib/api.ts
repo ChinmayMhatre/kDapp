@@ -4,10 +4,11 @@ import { getTokens } from "./utils";
 
 export const retrieveTokens = async ({ queryKey }: any) => {
     const [_, account] = queryKey
-
+    console.log(account?.chainId);
+    
     const response = await axios.get(`https://deep-index.moralis.io/api/v2.2/${account?.addresses?.[0]}/erc20`, {
         params: {
-            'chain': `0x${account?.chainId}`
+            'chain': `${account?.chainId == 11155111 ? "sepolia" : `0x${account?.chainId}`}`
         },
         headers: {
             'accept': 'application/json',
@@ -22,7 +23,7 @@ export const getAllTransactions = async ({ queryKey }: any) => {
     const [_, address, chainId] = queryKey
     const response = await axios.get(`https://deep-index.moralis.io/api/v2.2/${address}`, {
         params: {
-            'chain': `0x${chainId}`,
+            'chain': `${chainId == 11155111 ? "sepolia" : `0x${chainId}`}`,
             'order': 'DESC'
         },
         headers: {
