@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button"
 import { useBalance, useWriteContract } from 'wagmi'
 import { useAccount } from 'wagmi';
 import { useSendTransaction } from 'wagmi'
-import { isAddress, parseEther} from 'viem';
+import { isAddress, parseEther } from 'viem';
 
 import { Input } from "@/components/ui/input"
 import { Link, useNavigate } from 'react-router-dom';
-import { convertToEther} from './lib/utils';
+import { convertToEther } from './lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from './components/ui/select';
 import { ChevronLeft } from 'lucide-react';
@@ -103,7 +103,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
         }
 
         if (selectedToken === nativeToken.name) {
-            toast('Sending Transaction' )
+            toast('Sending Transaction')
             sendTransaction({
                 to: senderAddress,
                 value: parseEther(amount),
@@ -111,20 +111,20 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
             }, {
                 onSuccess: (data) => {
                     const newTransaction = {
-                        payload : {
-                            to:senderAddress,
+                        payload: {
+                            to: senderAddress,
                             value: amount,
-                            gas:BigInt(21000).toString()
+                            gas: BigInt(21000).toString()
                         },
-                        hash:data
+                        hash: data
                     }
                     localStorage.setItem(`${account?.address}`, JSON.stringify(newTransaction))
                     location.reload()
                 },
                 onError: (error) => {
                     console.log(error);
-                    
-                   toast('Error sending transaction')
+
+                    toast('Error sending transaction')
                 }
             })
             return
@@ -137,11 +137,11 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                 chainId: account.chainId,
                 address: tokenDetails?.address,
                 functionName: 'transfer',
-                args: [senderAddress, BigInt(Number(amount) * 10 ** (tokenDetails?.decimals ))],
+                args: [senderAddress, BigInt(Number(amount) * 10 ** (tokenDetails?.decimals ?? 0))],
                 abi: [{ "inputs": [{ "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "transfer", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }],
-                gas: BigInt(43500).toString(),
+                gas: BigInt(43500),
             }
-
+            // @ts-ignore 
             writeContract(payload, {
                 onSuccess: (data) => {
                     const storePayload = {
@@ -149,11 +149,11 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                         gas: BigInt(43500).toString(),
                         address: tokenDetails?.address,
                         functionName: 'transfer',
-                        args: [senderAddress, BigInt(Number(amount) * 10 ** tokenDetails?.decimals).toString()],
+                        args: [senderAddress, BigInt(Number(amount) * 10 ** (tokenDetails?.decimals ?? 0)).toString()],
                         abi: [{ "inputs": [{ "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "transfer", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }]
                     }
                     const newTransaction = {
-                        payload:storePayload,
+                        payload: storePayload,
                         hash: data
                     }
                     localStorage.setItem(`${account?.address}`, JSON.stringify(newTransaction))
@@ -161,7 +161,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                 },
                 onError: (error) => {
                     console.log(error);
-                    
+
                     toast('Error sending transaction')
                 }
             }

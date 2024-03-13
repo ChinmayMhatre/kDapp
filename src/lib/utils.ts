@@ -1,18 +1,18 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import axios from 'axios';
-import { useAccount, useBalance } from "wagmi";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
 
 interface TokenData {
   balance: string,
   name: string,
   symbol: string,
   logo: string,
-  address: string
+  address: string,
+  decimals: number
 }
 
 export const convertToEther = (wei: string, decimals: number) => {

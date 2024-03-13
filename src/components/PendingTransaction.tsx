@@ -1,8 +1,8 @@
-import React, { FC, useEffect, useState } from 'react'
-import { AlertDialog, AlertDialogAction,  AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
+import { FC, useEffect, useState } from 'react'
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
 import { formatAddress } from '@/lib/utils';
-import {  useReadContracts, useSendTransaction, useTransaction,useWriteContract } from 'wagmi';
-import { decodeFunctionData, erc20Abi, formatEther, formatGwei,} from 'viem';
+import { useReadContracts, useSendTransaction, useTransaction, useWriteContract } from 'wagmi';
+import { decodeFunctionData, erc20Abi, formatEther, formatGwei, } from 'viem';
 import { Loader2 } from 'lucide-react';
 
 interface PendingTransactionProps {
@@ -29,7 +29,7 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
     useEffect(() => {
         localStorage.getItem(`${userAddress}`) && setPendingTransaction(JSON.parse(localStorage.getItem(`${userAddress}`) as string))
         console.log(localStorage.getItem(`${userAddress}`), 'localstorage');
-        
+
     }, [localStorage])
 
 
@@ -42,6 +42,7 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
     const { sendTransaction } = useSendTransaction()
 
     const transaction = useTransaction({
+        // @ts-ignore 
         hash: pendingTransaction.hash,
         query: {
             refetchInterval: 2000,
@@ -105,7 +106,7 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
         }
         else {
             coinDataFetch.refetch()
-            
+
             const { args } = decodeFunctionData({
                 abi: erc20Abi,
                 data: transaction?.data?.input,
@@ -114,7 +115,7 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
 
             const coinName = coinDataFetch?.data?.[0]?.result
             const coinValue = Number(args[1]?.toString()) / 10 ** Number(coinDataFetch?.data?.[1]?.result)
-            
+
             setValueData({
                 value: coinValue.toString(),
                 symbol: coinName as string
@@ -131,7 +132,7 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
             gas: BigInt(Number(pendingTransaction?.payload.gas) * 2).toString()
         }
         console.log(!pendingTransaction?.payload?.args);
-        
+
         if (!!pendingTransaction?.payload?.args) {
             writeContract(newPayload)
         } else {
@@ -147,7 +148,7 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
     }
         , [transaction.isFetching])
 
-    if (pendingTransaction?.hash != '' )
+    if (pendingTransaction?.hash != '')
         return (
             <AlertDialog open={true}>
                 <AlertDialogContent>

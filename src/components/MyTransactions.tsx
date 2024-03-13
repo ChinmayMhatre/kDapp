@@ -28,10 +28,12 @@ const MyTransactions: FC<MyTransactionsProps> = ({ address, chainId, token }) =>
                 return
             }
             try {
-                const { args } = decodeFunctionData({
+                const arg = decodeFunctionData({
                     abi: erc20Abi,
                     data: transaction?.input,
                 })
+                if (null) {console.log(arg, 'arg');}
+
                 setTransactionData((prev: any) => [...prev, { ...transaction }])
             } catch (error) {
             }

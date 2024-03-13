@@ -1,5 +1,4 @@
 import { FC } from 'react'
-import Otter from '../assets/Otter.svg'
 import OtterBnW from '../assets/OtterBnW.svg'
 
 interface TokenCardProps {

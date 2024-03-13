@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { decodeFunctionData, erc20Abi, formatEther, formatGwei } from 'viem';
 import { formatAddress } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
@@ -54,23 +54,24 @@ const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAdd
             })
             setToAddress(args[0] as string)
             console.log(coinDataFetch?.data, 'args');
-            
+
             const coinName = coinDataFetch?.data?.[0]?.result
             const coinValue = Number(args[1]?.toString()) / 10 ** Number(coinDataFetch?.data?.[1]?.result)
 
             setValueData({
+                // @ts-ignore 
                 value: coinValue,
                 symbol: coinName as string
             })
-            
+
             setTransactionDataLoading(false)
         }
     }
 
     useEffect(() => {
         fetchTokenData()
-    }, [transaction,coinDataFetch.data])
-    
+    }, [transaction, coinDataFetch.data])
+
 
     if (transactionDataLoading) {
         return <div>Loading...</div>
