@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSwitchChain } from 'wagmi'
 import MainLayout from './components/MainLayout';
 import { Button } from './components/ui/button';
-import Otter from './assets/otter.svg';
+import Otter from './assets/Otter.svg';
 
 import { Copy } from 'lucide-react';
 import { formatAddress, convertToEther } from './lib/utils';

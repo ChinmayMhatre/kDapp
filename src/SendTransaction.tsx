@@ -15,7 +15,7 @@ import { ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { retrieveTokens } from './lib/api';
 import PendingTransaction from './components/PendingTransaction';
-import Otter from './assets/otter.svg';
+import Otter from './assets/Otter.svg';
 
 
 interface SendTransactionProps {

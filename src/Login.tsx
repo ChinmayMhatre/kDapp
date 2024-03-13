@@ -6,7 +6,7 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import Icons from './assets/loginIcons.svg';
-import Otter from './assets/otter.svg';
+import Otter from './assets/Otter.svg';
 interface LoginProps {
 
 }
