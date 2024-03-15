@@ -63,7 +63,7 @@ const Login: FC<LoginProps> = ({ }) => {
               </>
             ) : (
               <>
-                <img src={metamask.icon} className='mr-2 z-10' alt="metamask" width={20} height={20} />
+                <img src={metamask?.icon} className='mr-2 z-10' alt="metamask" width={20} height={20} />
                 Connect with {metamask?.name}
               </>
             )
