@@ -18,23 +18,25 @@ const Login: FC<LoginProps> = ({ }) => {
 
 
   useEffect(() => {
-    if(account.isConnected){
+    if (account.isConnected) {
       navigate('/')
     }
   }, [account.isConnected])
-  
+
 
   const metamask: any = connectors.find((connector) => connector.id === 'io.metamask')
+console.log(metamask, 'metamask');
+
 
   const handleConnect = async () => {
-    connect({ connector: metamask },{
+    connect({ connector: metamask }, {
       onSuccess: () => {
         navigate('/')
       },
       onError: (error) => {
         toast.error(error?.message, {
-          classNames: { toast: 'bg-red-500 text-white'}
-        })                                                                                                              
+          classNames: { toast: 'bg-red-500 text-white' }
+        })
       }
     })
   }
@@ -47,28 +49,30 @@ const Login: FC<LoginProps> = ({ }) => {
           <img src={Otter} alt="" />
         </div>
         <h2 className=' font-bold text-4xl z-10 text-primary'>Otter Wallet</h2>
-        <Button
-          key={metamask?.uid}
-          onClick={handleConnect}
-          disabled={status === 'pending'}
-          className=' w-[70%] z-10 '
-          type="button"
-          variant={"outline"}
-        >
-          {
-            status === "pending" ? (
-              <>
-                <Loader2 className='mr-2 h-4 w-4 z-10 animate-spin'/>
-                Connecting
-              </>
-            ) : (
-              <>
-                {metamask && <img src={metamask?.icon} className='mr-2 z-10' alt="metamask" width={20} height={20} />}
-                Connect with {metamask?.name}
-              </>
-            )
-          }
-        </Button>
+        {
+          metamask ? (<Button
+            key={metamask?.uid}
+            onClick={handleConnect}
+            disabled={status === 'pending'}
+            className=' w-[70%] z-10 '
+            type="button"
+            variant={"outline"}
+          >
+            {
+              status === "pending" ? (
+                <>
+                  <Loader2 className='mr-2 h-4 w-4 z-10 animate-spin' />
+                  Connecting
+                </>
+              ) : (
+                <>
+                  {<img src={metamask?.icon} className='mr-2 z-10' alt="metamask" width={20} height={20} />}
+                  Connect with {metamask?.name}
+                </>
+              )
+            }
+          </Button>) : (<p className='text-black z-10'>Please install meta mask</p>)
+        }
       </div>
     </MainLayout>
   )

@@ -48,6 +48,8 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
         if (balance.isSuccess) {
             const intBalance = BigInt(balance.data?.value ?? 0).toString()
             const ethBalance = convertToEther(intBalance, balance?.data?.decimals)
+            console.log(nativeToken, 'nativeToken');
+            
             setNativeToken({
                 name: balance.data?.symbol,
                 balance: ethBalance
@@ -66,8 +68,12 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
     const { sendTransaction } = useSendTransaction()
 
 
+    console.log(tokens);
+    
 
     const displayTokenBalance = () => {
+        console.log(selectedToken, nativeToken.name, 'selectedToken');
+        
         if (selectedToken === nativeToken.name) {
             return Number(nativeToken.balance).toFixed(4)
         }
@@ -80,7 +86,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
         const currentToken = tokens?.find((el) => el.symbol === selectedToken)
         setAmount(e.target.value)
 
-        if (selectedToken === "ETH") {
+        if (selectedToken === nativeToken?.name) {
             if (e.target.value > Number(nativeToken.balance)) {
                 setAmountError("Amount exceeded")
             }
@@ -116,7 +122,8 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                             value: amount,
                             gas: BigInt(21000).toString()
                         },
-                        hash: data
+                        hash: data,
+                        chainId : account?.chainId
                     }
                     localStorage.setItem(`${account?.address}`, JSON.stringify(newTransaction))
                     location.reload()
@@ -154,7 +161,8 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                     }
                     const newTransaction = {
                         payload: storePayload,
-                        hash: data
+                        hash: data,
+                        chainId : account?.chainId
                     }
                     localStorage.setItem(`${account?.address}`, JSON.stringify(newTransaction))
                     location.reload()

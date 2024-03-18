@@ -4,7 +4,6 @@ import { getTokens } from "./utils";
 
 export const retrieveTokens = async ({ queryKey }: any) => {
     const [_, account] = queryKey
-    console.log(account?.chainId);
     
     const response = await axios.get(`https://deep-index.moralis.io/api/v2.2/${account?.addresses?.[0]}/erc20`, {
         params: {
