@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { retrieveTokens } from './lib/api';
 import PendingTransaction from './components/PendingTransaction';
 import Otter from './assets/Otter.svg';
+import SwitchChainModal from './components/SwitchChainModal';
 
 
 interface SendTransactionProps {
@@ -35,6 +36,8 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
     const [error, setError] = useState("")
     const account = useAccount()
     const navigate = useNavigate()
+    const [switchModalOpen, setSwitchModalOpen] = useState(false)
+
 
     const { writeContract } = useWriteContract()
 
@@ -49,7 +52,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
             const intBalance = BigInt(balance.data?.value ?? 0).toString()
             const ethBalance = convertToEther(intBalance, balance?.data?.decimals)
             console.log(nativeToken, 'nativeToken');
-            
+
             setNativeToken({
                 name: balance.data?.symbol,
                 balance: ethBalance
@@ -69,11 +72,11 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
 
 
     console.log(tokens);
-    
+
 
     const displayTokenBalance = () => {
         console.log(selectedToken, nativeToken.name, 'selectedToken');
-        
+
         if (selectedToken === nativeToken.name) {
             return Number(nativeToken.balance).toFixed(4)
         }
@@ -123,7 +126,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                             gas: BigInt(21000).toString()
                         },
                         hash: data,
-                        chainId : account?.chainId
+                        chainId: account?.chainId
                     }
                     localStorage.setItem(`${account?.address}`, JSON.stringify(newTransaction))
                     location.reload()
@@ -162,7 +165,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                     const newTransaction = {
                         payload: storePayload,
                         hash: data,
-                        chainId : account?.chainId
+                        chainId: account?.chainId
                     }
                     localStorage.setItem(`${account?.address}`, JSON.stringify(newTransaction))
                     location.reload()
@@ -192,6 +195,8 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
 
     return (
         <MainLayout>
+            <SwitchChainModal open={switchModalOpen} />
+
             <div className=" h-full flex flex-col gap-4 py-4">
                 <div className=" grid grid-cols-4 justify-between items-center">
                     <div className="flex">

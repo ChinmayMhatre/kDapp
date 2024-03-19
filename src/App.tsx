@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import TokenList from './components/TokenList';
 import MyTransactions from './components/MyTransactions';
 import PendingTransaction from './components/PendingTransaction';
+import SwitchChainModal from './components/SwitchChainModal';
 
 function App() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ function App() {
   const { chains, switchChain } = useSwitchChain()
   const [buttonText, setButtonText] = useState('')
   const [accountBalance, setAccountBalance] = useState<any>(0)
+  const [switchModalOpen, setSwitchModalOpen] = useState(false)
 
 
   const balance = useBalance({
@@ -38,7 +40,16 @@ function App() {
       navigate('/login')
     }
     setButtonText(formatAddress(account?.addresses?.[0] ?? ''))
+
   }, [account.status])
+
+  useEffect(() => {
+    if (account?.chainId !== 1 && account?.chainId !== 5 && account?.chainId !== 11155111) {
+      setSwitchModalOpen(true)
+    } else {
+      setSwitchModalOpen(false)
+    }
+  }, [account.chainId])
 
 
   useEffect(() => {
@@ -63,8 +74,10 @@ function App() {
   }
 
 
+
   return (
     <MainLayout>
+      <SwitchChainModal open={switchModalOpen} />
       <div className='h-full w-full flex flex-col gap-4'>
         <img src={Otter} alt="logo" className='h-14 w-14' />
         <div className=" gap-3 flex">
