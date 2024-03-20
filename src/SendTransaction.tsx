@@ -51,7 +51,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
         if (balance.isSuccess) {
             const intBalance = BigInt(balance.data?.value ?? 0).toString()
             const ethBalance = convertToEther(intBalance, balance?.data?.decimals)
-            console.log(nativeToken, 'nativeToken');
+            console.log(balance?.data, 'nativeToken');
 
             setNativeToken({
                 name: balance.data?.symbol,
@@ -66,12 +66,13 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
 
     useEffect(() => {
         refetch()
+        if (account?.chainId === 11155111) {
+            setSelectedToken('SEP')
+        }
     }, [account?.chainId, account?.addresses?.[0]])
 
     const { sendTransaction } = useSendTransaction()
 
-
-    console.log(tokens);
 
 
     const displayTokenBalance = () => {
@@ -191,6 +192,9 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
             </div>
         </MainLayout>
     }
+
+    console.log(selectedToken, 'selectedToken');
+    
 
 
     return (

@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react'
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
 import { formatAddress } from '@/lib/utils';
-import { useReadContracts, useSendTransaction, useTransaction, useWriteContract } from 'wagmi';
+import { useReadContracts, useSendTransaction, useTransaction, useTransactionReceipt, useWriteContract } from 'wagmi';
 import { decodeFunctionData, erc20Abi, formatEther, formatGwei, } from 'viem';
 import { Loader2 } from 'lucide-react';
 
@@ -17,9 +17,9 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
 
     type pendingTransactionType = {
         payload: any,
-        hash: string
+        hash: string,
+        chainId?: any
     }
-
 
     const [pendingTransaction, setPendingTransaction] = useState<pendingTransactionType>({
         payload: null,
@@ -32,6 +32,7 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
 
     }, [localStorage])
 
+console.log(pendingTransaction, 'pendingTransaction');
 
 
     const [valueData, setValueData] = useState({
@@ -40,7 +41,7 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
     })
     const [toAddress, setToAddress] = useState("")
     const { sendTransaction } = useSendTransaction()
-
+    
     const transaction = useTransaction({
         // @ts-ignore 
         hash: pendingTransaction.hash,
@@ -49,6 +50,18 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
             enabled: true,
         }
     })
+
+
+    // const receipt = useTransactionReceipt({
+    //     hash: pendingTransaction.hash,
+    //     query: {
+    //         refetchInterval: 2000,
+    //         enabled: true,
+    //     }
+    // })
+
+    // console.log(receipt, 'receipt');
+    
 
     const coinNameContract = {
         address: transaction?.data?.to,
@@ -74,8 +87,11 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
 
 
     const fetchTokenData = () => {
-
+        console.log(transaction?.data, 'transaction');
+        
         if (transaction?.data?.chainId != chainId) {
+            console.log('chainid not equal');
+            
             setPendingTransaction({
                 payload: null,
                 hash: ''
@@ -83,14 +99,18 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
             return
         }
         if (transaction?.data?.from != userAddress.toLowerCase()) {
+            console.log('user sender not equal');
             setPendingTransaction({
                 payload: null,
                 hash: ''
             })
             return
         }
-
+        
         if (transaction?.data?.blockHash != null) {
+            console.log('blockhash not null');
+            console.log(transaction?.data?.blockHash, 'blockhash');
+            
             localStorage.removeItem(`${userAddress}`)
             setPendingTransaction({
                 payload: null,
@@ -142,13 +162,14 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
     }
 
     useEffect(() => {
-        if (!transaction?.isLoading) {
+        console.log(transaction);
+        if (transaction?.isSuccess) {
             fetchTokenData()
         }
     }
         , [transaction.isFetching])
 
-    if (pendingTransaction?.hash != '')
+    if (pendingTransaction?.hash != '' && pendingTransaction?.chainId === chainId)
         return (
             <AlertDialog open={true}>
                 <AlertDialogContent>

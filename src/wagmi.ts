@@ -10,7 +10,7 @@ export const config = createConfig({
   ],
   transports: {
     [mainnet.id]: http(),
-    [sepolia.id]: http(),
+    [sepolia.id]: http('https://eth-sepolia.g.alchemy.com/v2/9uYuE_B8KltENwqjoeUwH_Ic-PDGASjI'),
     [goerli.id]: http('https://eth-goerli.g.alchemy.com/v2/9uYuE_B8KltENwqjoeUwH_Ic-PDGASjI'),
   },
    
