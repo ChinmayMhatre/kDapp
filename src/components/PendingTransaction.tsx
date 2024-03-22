@@ -51,18 +51,6 @@ console.log(pendingTransaction, 'pendingTransaction');
         }
     })
 
-
-    // const receipt = useTransactionReceipt({
-    //     hash: pendingTransaction.hash,
-    //     query: {
-    //         refetchInterval: 2000,
-    //         enabled: true,
-    //     }
-    // })
-
-    // console.log(receipt, 'receipt');
-    
-
     const coinNameContract = {
         address: transaction?.data?.to,
         abi: erc20Abi,
@@ -87,7 +75,6 @@ console.log(pendingTransaction, 'pendingTransaction');
 
 
     const fetchTokenData = () => {
-        console.log(transaction?.data, 'transaction');
         
         if (transaction?.data?.chainId != chainId) {
             console.log('chainid not equal');
@@ -99,7 +86,6 @@ console.log(pendingTransaction, 'pendingTransaction');
             return
         }
         if (transaction?.data?.from != userAddress.toLowerCase()) {
-            console.log('user sender not equal');
             setPendingTransaction({
                 payload: null,
                 hash: ''
@@ -108,8 +94,6 @@ console.log(pendingTransaction, 'pendingTransaction');
         }
         
         if (transaction?.data?.blockHash != null) {
-            console.log('blockhash not null');
-            console.log(transaction?.data?.blockHash, 'blockhash');
             
             localStorage.removeItem(`${userAddress}`)
             setPendingTransaction({
@@ -162,7 +146,6 @@ console.log(pendingTransaction, 'pendingTransaction');
     }
 
     useEffect(() => {
-        console.log(transaction);
         if (transaction?.isSuccess) {
             fetchTokenData()
         }

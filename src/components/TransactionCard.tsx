@@ -145,10 +145,6 @@ const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAdd
                         </div>
                     </DialogDescription>
                 </DialogHeader>
-                {/* <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction>Continue</AlertDialogAction>
-                </AlertDialogFooter> */}
             </DialogContent>
         </Dialog>
     )
