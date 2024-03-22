@@ -40,7 +40,9 @@ const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAdd
 
     const fetchTokenData = () => {
         if (transaction?.input === '0x') {
-            setToAddress(transaction?.to)
+            console.log(transaction,'0x');
+            
+            setToAddress(transaction?.to_address)
             setValueData({
                 value: formatEther(transaction?.value),
                 symbol: token

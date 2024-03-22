@@ -6,7 +6,7 @@ import MainLayout from './components/MainLayout';
 import { Button } from './components/ui/button';
 import Otter from './assets/Otter.svg';
 
-import { Copy } from 'lucide-react';
+import { Copy, LogOut, Send } from 'lucide-react';
 import { formatAddress, convertToEther } from './lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import TokenList from './components/TokenList';
@@ -79,17 +79,19 @@ function App() {
     <MainLayout>
       <SwitchChainModal open={switchModalOpen} />
       <div className='h-full w-full flex flex-col gap-4'>
-        <img src={Otter} alt="logo" className='h-14 w-14' />
+        <div className="flex justify-between items-center">
+          <img src={Otter} alt="logo" className='h-14 w-14' />
+          {account.status === 'connected' && (
+            <button onClick={()=>disconnect()}>
+              <LogOut className='h-6 w-6'/>
+            </button>
+          )}
+        </div>
         <div className=" gap-3 flex">
           <Button onClick={() => copyToClipboard(account?.addresses?.[0] ?? '')}>
             {buttonText}
             <Copy className="ml-2 h-4 w-4" />
           </Button>
-          {account.status === 'connected' && (
-            <Button onClick={() => disconnect()}>
-              Disconnect
-            </Button>
-          )}
         </div>
         <h2 className=' font-bold text-4xl text-slate-700'>
           {Number(accountBalance).toPrecision(4)} <span className=' text-xl text-slate-500'>{balance?.data?.symbol}</span>
@@ -105,9 +107,10 @@ function App() {
           </div>
         </div>
 
-        <Button onClick={() => navigate('/send')} className=' font-semibold'>
+        <button onClick={() => navigate('/send')} className=' text-[#2172ED] justify-center flex items-center rounded-2xl bg-[#F4F1F2] font-semibold py-6'>
+          <Send className='h-4 w-4 mr-2' />
           Send Tokens
-        </Button>
+        </button>
         <Tabs defaultValue='token' className='w-full' >
           <TabsList className='w-full'>
             <TabsTrigger className='w-full' value='token' >Tokens</TabsTrigger>

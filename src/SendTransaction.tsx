@@ -48,6 +48,14 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
     const balance = useBalance({ address: account?.addresses?.[0] })
 
     useEffect(() => {
+        if (account?.chainId !== 1 && account?.chainId !== 5 && account?.chainId !== 11155111) {
+          setSwitchModalOpen(true)
+        } else {
+          setSwitchModalOpen(false)
+        }
+      }, [account.chainId])
+
+    useEffect(() => {
         if (balance.isSuccess) {
             const intBalance = BigInt(balance.data?.value ?? 0).toString()
             const ethBalance = convertToEther(intBalance, balance?.data?.decimals)
@@ -58,7 +66,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                 balance: ethBalance
             })
         }
-    }, [balance.isSuccess])
+    }, [balance.isSuccess, account?.chainId])
 
 
 
