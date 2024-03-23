@@ -7,6 +7,7 @@ import { isAddress, parseEther } from 'viem';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getTransactionCount } from 'viem/actions';
+import { useNavigate } from 'react-router-dom';
 
 interface PendingTransactionProps {
     chainId: number | undefined
@@ -75,6 +76,7 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
         }
     })
 
+    const navigate = useNavigate()
 
     const fetchTokenData = () => {
         
@@ -101,6 +103,7 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
                 payload: null,
                 hash: ''
             })
+            navigate('/')
         }
         if (transaction?.data?.input === '0x') {
             setToAddress(transaction?.data?.to)
@@ -147,12 +150,12 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
             }
             writeContract(newContractPayload,{
                 onSuccess: (hash) => {
-                    const newPayload = {
+                    const newContractStorePayload = {
                         ...pendingTransaction,
                         hash:hash,
                     }
                     localStorage.removeItem(`${userAddress}`)
-                    localStorage.setItem(`${userAddress}`, JSON.stringify(newPayload))
+                    localStorage.setItem(`${userAddress}`, JSON.stringify(newContractStorePayload))
                     location.reload()
                 },
                 onError: (error) => {

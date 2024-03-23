@@ -25,18 +25,33 @@ const Login: FC<LoginProps> = ({ }) => {
 
 
   const metamask: any = connectors.find((connector) => connector.id === 'io.metamask')
+  const walletConnect: any = connectors.find((connector) => connector.id === "walletConnect")
+  console.log(connectors, 'connectors');
 
-  const handleConnect = async () => {
-    connect({ connector: metamask }, {
-      onSuccess: () => {
-        navigate('/')
-      },
-      onError: (error) => {
-        toast.error(error?.message, {
-          classNames: { toast: 'bg-red-500 text-white' }
-        })
-      }
-    })
+  const handleConnect = async (id: any) => {
+    if (metamask && metamask.uid === id) {
+      connect({ connector: metamask }, {
+        onSuccess: () => {
+          navigate('/')
+        },
+        onError: (error) => {
+          toast.error(error?.message, {
+            classNames: { toast: 'bg-red-500 text-white' }
+          })
+        }
+      })
+    } else if (walletConnect && walletConnect.id === id) {
+      connect({ connector: walletConnect }, {
+        onSuccess: () => {
+          navigate('/')
+        },
+        onError: (error) => {
+          toast.error(error?.message, {
+            classNames: { toast: 'bg-red-500 text-white' }
+          })
+        }
+      })
+    }
   }
 
   return (
@@ -48,9 +63,9 @@ const Login: FC<LoginProps> = ({ }) => {
         </div>
         <h2 className=' font-bold text-4xl z-10 text-primary'>Otter Wallet</h2>
         {
-          metamask ? (<Button
+          metamask && (<Button
             key={metamask?.uid}
-            onClick={handleConnect}
+            onClick={() => handleConnect(metamask.uid)}
             disabled={status === 'pending'}
             className=' w-[70%] z-10 '
             type="button"
@@ -69,7 +84,30 @@ const Login: FC<LoginProps> = ({ }) => {
                 </>
               )
             }
-          </Button>) : (<p className='text-black z-10'>Please install meta mask</p>)
+          </Button>)
+        }
+        {
+          walletConnect && (<Button
+            key={walletConnect?.id}
+            onClick={() => handleConnect(walletConnect.id)}
+            disabled={status === 'pending'}
+            className=' w-[70%] z-10 '
+            type="button"
+            variant={"outline"}
+          >
+            {
+              status === "pending" ? (
+                <>
+                  <Loader2 className='mr-2 h-4 w-4 z-10 animate-spin' />
+                  Connecting
+                </>
+              ) : (
+                <>
+                  Connect with {walletConnect?.name}
+                </>
+              )
+            }
+          </Button>)
         }
       </div>
     </MainLayout>
