@@ -18,7 +18,6 @@ import PendingTransaction from './components/PendingTransaction';
 import Otter from './assets/Otter.svg';
 import SwitchChainModal from './components/SwitchChainModal';
 
-
 interface SendTransactionProps {
 
 }
@@ -33,6 +32,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
     })
     const [amount, setAmount] = useState("")
     const [amountError, setAmountError] = useState("")
+    const [disabled, setDisabled] = useState(false)
     const [error, setError] = useState("")
     const account = useAccount()
     const navigate = useNavigate()
@@ -59,7 +59,6 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
         if (balance.isSuccess) {
             const intBalance = BigInt(balance.data?.value ?? 0).toString()
             const ethBalance = convertToEther(intBalance, balance?.data?.decimals)
-            console.log(balance?.data, 'nativeToken');
 
             setNativeToken({
                 name: balance.data?.symbol,
@@ -84,7 +83,6 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
 
 
     const displayTokenBalance = () => {
-        console.log(selectedToken, nativeToken.name, 'selectedToken');
 
         if (selectedToken === nativeToken.name) {
             return Number(nativeToken.balance).toFixed(4)
@@ -111,12 +109,15 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
 
 
     const handleSendTransaction = async () => {
+        setDisabled(true)
         setError("")
         if (!isAddress(senderAddress)) {
             setError("Invalid address")
+            setDisabled(false)  
             return
         }
         if (amountError.length > 0) {
+            setDisabled(false)
             return
         }
 
@@ -146,6 +147,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                     toast('Error sending transaction')
                 }
             })
+            setDisabled(false)
             return
         } else {
 
@@ -181,7 +183,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                 },
                 onError: (error) => {
                     console.log(error);
-
+                    setDisabled(false)
                     toast('Error sending transaction')
                 }
             }
@@ -200,8 +202,6 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
             </div>
         </MainLayout>
     }
-
-    console.log(selectedToken, 'selectedToken');
     
 
 
@@ -238,7 +238,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                 <div className="flex font-semibold text-[#4E5C6B] justify-center items-center">
                     Amount
                 </div>
-                <Input placeholder={`0.0 ${selectedToken}`} value={amount} className=' outline-none border-0 p-0 text-4xl  text-center' type='number' onChange={(e) => handleAmount(e)} />
+                <Input placeholder={`0.0 ${selectedToken}`} value={amount} className=' outline-none selection:outline-none border-0 p-0 text-4xl  text-center' type='number' onChange={(e) => handleAmount(e)} />
                 <p className=' text-red-700 text-sm'>{amountError}</p>
                 <Button className='w-full' onClick={() => handleSendTransaction()}>Send</Button>
                 <div className="">

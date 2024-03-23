@@ -4,6 +4,7 @@ import { formatAddress } from '@/lib/utils';
 import { useReadContracts, useSendTransaction, useTransaction, useTransactionReceipt, useWriteContract } from 'wagmi';
 import { decodeFunctionData, erc20Abi, formatEther, formatGwei, } from 'viem';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface PendingTransactionProps {
     chainId: number | undefined
@@ -28,11 +29,8 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
 
     useEffect(() => {
         localStorage.getItem(`${userAddress}`) && setPendingTransaction(JSON.parse(localStorage.getItem(`${userAddress}`) as string))
-        console.log(localStorage.getItem(`${userAddress}`), 'localstorage');
 
     }, [localStorage])
-
-console.log(pendingTransaction, 'pendingTransaction');
 
 
     const [valueData, setValueData] = useState({
@@ -77,7 +75,6 @@ console.log(pendingTransaction, 'pendingTransaction');
     const fetchTokenData = () => {
         
         if (transaction?.data?.chainId != chainId) {
-            console.log('chainid not equal');
             
             setPendingTransaction({
                 payload: null,
@@ -94,7 +91,7 @@ console.log(pendingTransaction, 'pendingTransaction');
         }
         
         if (transaction?.data?.blockHash != null) {
-            
+            toast.success('Transaction Successful')
             localStorage.removeItem(`${userAddress}`)
             setPendingTransaction({
                 payload: null,
@@ -135,7 +132,6 @@ console.log(pendingTransaction, 'pendingTransaction');
             ...pendingTransaction?.payload,
             gas: BigInt(Number(pendingTransaction?.payload.gas) * 2).toString()
         }
-        console.log(!pendingTransaction?.payload?.args);
 
         if (!!pendingTransaction?.payload?.args) {
             writeContract(newPayload)
@@ -203,9 +199,9 @@ console.log(pendingTransaction, 'pendingTransaction');
                             </div>
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
+                    {/* <AlertDialogFooter>
                         <AlertDialogAction onClick={updateTransaction}>Speed Up Transaction</AlertDialogAction>
-                    </AlertDialogFooter>
+                    </AlertDialogFooter> */}
                 </AlertDialogContent>
             </AlertDialog>
         )
