@@ -40,7 +40,6 @@ const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAdd
 
     const fetchTokenData = () => {
         if (transaction?.input === '0x') {
-            console.log(transaction,'0x');
             
             setToAddress(transaction?.to_address)
             setValueData({
@@ -55,7 +54,6 @@ const TransactionCard: FC<TransactionCardProps> = ({ transaction, token, userAdd
                 data: transaction?.input,
             })
             setToAddress(args[0] as string)
-            console.log(coinDataFetch?.data, 'args');
 
             const coinName = coinDataFetch?.data?.[0]?.result
             const coinValue = Number(args[1]?.toString()) / 10 ** Number(coinDataFetch?.data?.[1]?.result)

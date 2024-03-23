@@ -1,10 +1,12 @@
 import { FC, useEffect, useState } from 'react'
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
 import { formatAddress } from '@/lib/utils';
-import { useReadContracts, useSendTransaction, useTransaction, useTransactionReceipt, useWriteContract } from 'wagmi';
+import { useAccount, useReadContracts, useSendTransaction, useTransaction, useTransactionCount, useTransactionReceipt, useWriteContract } from 'wagmi';
 import { decodeFunctionData, erc20Abi, formatEther, formatGwei, } from 'viem';
+import { isAddress, parseEther } from 'viem';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { getTransactionCount } from 'viem/actions';
 
 interface PendingTransactionProps {
     chainId: number | undefined
@@ -12,7 +14,9 @@ interface PendingTransactionProps {
     userAddress: string
 }
 
+
 const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken, userAddress }) => {
+    const account = useAccount()
 
     const { writeContract } = useWriteContract()
 
@@ -125,18 +129,56 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
         }
     }
 
+    
+    const tc = useTransactionCount({
+        // @ts-ignore 
+        address: userAddress,
+    })
 
-
+    
     const updateTransaction = () => {
-        const newPayload = {
-            ...pendingTransaction?.payload,
-            gas: BigInt(Number(pendingTransaction?.payload.gas) * 2).toString()
-        }
-
+        
         if (!!pendingTransaction?.payload?.args) {
-            writeContract(newPayload)
+            const newContractPayload = {
+                ...pendingTransaction?.payload,
+                nonce: tc.data,
+                args: [pendingTransaction?.payload?.args[0], BigInt(pendingTransaction?.payload?.args[1])],
+                gasPrice: BigInt(Number(transaction?.data?.gasPrice) * 2)
+            }
+            writeContract(newContractPayload,{
+                onSuccess: (hash) => {
+                    const newPayload = {
+                        ...pendingTransaction,
+                        hash:hash,
+                    }
+                    localStorage.removeItem(`${userAddress}`)
+                    localStorage.setItem(`${userAddress}`, JSON.stringify(newPayload))
+                    location.reload()
+                },
+                onError: (error) => {
+                    console.log(error);
+                }})
         } else {
-            sendTransaction(newPayload)
+            const newTransactionPayload = {
+                ...pendingTransaction?.payload,
+                nonce: tc.data,
+                value: parseEther(pendingTransaction?.payload?.value),
+                gasPrice: BigInt(Number(transaction?.data?.gasPrice) * 2)
+            }
+            sendTransaction(newTransactionPayload,{
+                onSuccess: (hash) => {
+                    const newPayload = {
+                        ...pendingTransaction,
+                        hash:hash,
+                    }
+                    localStorage.removeItem(`${userAddress}`)
+                    localStorage.setItem(`${userAddress}`, JSON.stringify(newPayload))
+                    location.reload()
+                },
+                onError: (error) => {
+                    console.log(error);
+                }
+            })
         }
 
     }
@@ -199,9 +241,11 @@ const PendingTransaction: FC<PendingTransactionProps> = ({ chainId, nativeToken,
                             </div>
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    {/* <AlertDialogFooter>
-                        <AlertDialogAction onClick={updateTransaction}>Speed Up Transaction</AlertDialogAction>
-                    </AlertDialogFooter> */}
+                    {
+                        transaction?.isSuccess && <AlertDialogFooter>
+                            <AlertDialogAction onClick={updateTransaction}>Speed Up Transaction</AlertDialogAction>
+                        </AlertDialogFooter>
+                    }
                 </AlertDialogContent>
             </AlertDialog>
         )

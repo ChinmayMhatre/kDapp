@@ -21,7 +21,6 @@ const MyTransactions: FC<MyTransactionsProps> = ({ address, chainId, token }) =>
 
     const filterTransactions = (transactions: any) => {
         setDataLoading(true)
-        console.log(transactions);
         transactions.map((transaction: any) => {
             if (transaction?.input === '0x') {
                 setTransactionData((prev: any) => [...prev, { ...transaction }])

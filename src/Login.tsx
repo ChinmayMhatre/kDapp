@@ -25,8 +25,6 @@ const Login: FC<LoginProps> = ({ }) => {
 
 
   const metamask: any = connectors.find((connector) => connector.id === 'io.metamask')
-console.log(metamask, 'metamask');
-
 
   const handleConnect = async () => {
     connect({ connector: metamask }, {

@@ -133,7 +133,7 @@ const SendTransaction: FC<SendTransactionProps> = ({ }) => {
                         payload: {
                             to: senderAddress,
                             value: amount,
-                            gas: BigInt(21000).toString()
+                            // gas: BigInt(21000).toString()
                         },
                         hash: data,
                         chainId: account?.chainId
