@@ -107,9 +107,9 @@ function App() {
           </div>
         </div>
 
-        <button onClick={() => navigate('/send')} className=' text-[#2172ED] justify-center flex items-center rounded-2xl bg-[#F4F1F2] font-semibold py-6'>
-          <Send className='h-4 w-4 mr-2' />
-          Send Tokens
+        <button onClick={() => navigate('/send')} className=' text-[#2172ED] justify-center flex items-center rounded-2xl text-2xl bg-[#F4F1F2] font-semibold py-6'>
+          <Send className='h-6 w-6 mr-2' />
+          Send
         </button>
         <Tabs defaultValue='token' className='w-full' >
           <TabsList className='w-full'>

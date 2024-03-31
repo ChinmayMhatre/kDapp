@@ -14,8 +14,8 @@ const TokenCard: FC<TokenCardProps> = ({ token }) => {
                     <img src={OtterBnW} className='w-10 h-10 ' alt="otter" />
                 </div>
                 <div className="flex flex-col items-start justify-center">
-                    <p className=' font-bold text-lg text-[#4E5C6B]'>{Number(token.balance).toFixed(4)}</p>
-                    <p className=' text-secondary-purple text-xs font-bold' >{token.symbol}</p>
+                    <p className=' font-bold text-lg text-[#4E5C6B]'>{token.symbol}</p>
+                    <p className=' text-[#7596BD] text-xs font-bold' >{Number(token.balance).toFixed(4)} {token.symbol}</p>
                 </div>
             </div>
         </div>

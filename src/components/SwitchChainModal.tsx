@@ -14,7 +14,7 @@ const SwitchChainModal: FC<SwitchChainModalProps> = ({ open }) => {
     <AlertDialog open={open}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Hi,Please switch to one of the supported chains</AlertDialogTitle>
+          <AlertDialogTitle>Please switch to one of the supported chains</AlertDialogTitle>
         </AlertDialogHeader>
         <AlertDialogDescription>
         <div className=" bg-slate-100 inline-flex items-center gap-2 p-2 w-full justify-around rounded-full">
